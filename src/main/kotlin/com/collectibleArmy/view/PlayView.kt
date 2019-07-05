@@ -5,7 +5,7 @@ import com.collectibleArmy.KeyboardMapping.AttackKey
 import com.collectibleArmy.KeyboardMapping.DefendKey
 import com.collectibleArmy.KeyboardMapping.ForwardKey
 import com.collectibleArmy.KeyboardMapping.RetreatKey
-import com.collectibleArmy.attributes.types.PlayerFaction
+import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.command.globals.GlobalCommand
 import com.collectibleArmy.commands.globals.Attack
@@ -74,10 +74,10 @@ class PlayView(private val game: Game = GameBuilder.defaultGame()) : BaseView() 
             var command: GlobalCommand? = null
 
             when (event.code) {
-                ForwardKey -> command = Forward(PlayerFaction)
-                RetreatKey -> command = Retreat(PlayerFaction)
-                AttackKey -> command = Attack(PlayerFaction)
-                DefendKey -> command = Defend(PlayerFaction)
+                ForwardKey -> command = Forward(BlueFaction)
+                RetreatKey -> command = Retreat(BlueFaction)
+                AttackKey -> command = Attack(BlueFaction)
+                DefendKey -> command = Defend(BlueFaction)
             }
 
             if (command != null) {
@@ -89,25 +89,25 @@ class PlayView(private val game: Game = GameBuilder.defaultGame()) : BaseView() 
 
         Zircon.eventBus.subscribe<AttackActionEvent> {
             game.area.update(screen,
-                Attack(PlayerFaction),
+                Attack(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<DefendActionEvent> {
             game.area.update(screen,
-                Defend(PlayerFaction),
+                Defend(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<ForwardActionEvent> {
             game.area.update(screen,
-                Forward(PlayerFaction),
+                Forward(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<RetreatActionEvent> {
             game.area.update(screen,
-                Retreat(PlayerFaction),
+                Retreat(BlueFaction),
                 game)
         }
     }

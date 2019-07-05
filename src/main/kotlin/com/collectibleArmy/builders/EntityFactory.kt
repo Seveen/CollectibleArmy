@@ -5,9 +5,11 @@ import com.collectibleArmy.attributes.flags.BlockOccupier
 import com.collectibleArmy.attributes.types.*
 import com.collectibleArmy.commands.Attack
 import com.collectibleArmy.game.GameContext
-import com.collectibleArmy.systems.behaviors.BehaviorsToStringMap
 import com.collectibleArmy.systems.behaviors.ForwardMover
-import com.collectibleArmy.systems.facets.*
+import com.collectibleArmy.systems.facets.Attackable
+import com.collectibleArmy.systems.facets.Destructible
+import com.collectibleArmy.systems.facets.Fleeable
+import com.collectibleArmy.systems.facets.Movable
 import org.hexworks.amethyst.api.Entities
 import org.hexworks.amethyst.api.builder.EntityBuilder
 import org.hexworks.amethyst.api.entity.EntityType
@@ -16,16 +18,22 @@ fun <T : EntityType> newGameEntityOfType(type: T, init: EntityBuilder<T, GameCon
     Entities.newEntityOfType(type, init)
 
 object EntityFactory {
-    private val attributeToStringMap = AttributeToStringMap().map
-    private val facetsToStringMap = FacetsToStringMap().map
-    private val behaviorsToStringMap = BehaviorsToStringMap().map
 
-    fun newOutside() = newGameEntityOfType(Outside) {
+    fun newBlueOutside() = newGameEntityOfType(Outside) {
         attributes(
             EntityPosition(),
             BlockOccupier,
-            EntityTile(GameTileRepository.OUTSIDE),
-            Faction(NeutralFaction)
+            EntityTile(GameTileRepository.BLUE_OUTSIDE),
+            Faction(BlueFaction)
+        )
+    }
+
+    fun newRedOutside() = newGameEntityOfType(Outside) {
+        attributes(
+            EntityPosition(),
+            BlockOccupier,
+            EntityTile(GameTileRepository.RED_OUTSIDE),
+            Faction(RedFaction)
         )
     }
 
@@ -49,7 +57,7 @@ object EntityFactory {
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.HERO),
-            Faction(PlayerFaction),
+            Faction(BlueFaction),
             Initiative()
         )
         behaviors(ForwardMover)
@@ -67,7 +75,7 @@ object EntityFactory {
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.SOLDIER),
-            Faction(PlayerFaction),
+            Faction(BlueFaction),
             Initiative()
         )
         behaviors(ForwardMover)
@@ -85,7 +93,7 @@ object EntityFactory {
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.VILLAIN),
-            Faction(EnemyFaction),
+            Faction(RedFaction),
             Initiative()
         )
         behaviors(ForwardMover)

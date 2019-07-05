@@ -6,7 +6,8 @@ object GameColors {
     val WALL_FOREGROUND = TileColors.fromString("#75715E")
     val WALL_BACKGROUND = TileColors.fromString("#3E3D32")
 
-    val OUTSIDE_BACKGROUND = TileColors.fromString("#FF0000")
+    val RED_OUTSIDE_BACKGROUND = TileColors.fromString("#FF0000")
+    val BLUE_OUTSIDE_BACKGROUND = TileColors.fromString("#0000FF")
 
     val FLOOR_FOREGROUND = TileColors.fromString("#75715E")
     val FLOOR_BACKGROUND = TileColors.fromString("#1e2320")

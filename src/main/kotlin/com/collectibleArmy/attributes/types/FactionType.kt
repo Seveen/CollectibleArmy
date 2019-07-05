@@ -8,11 +8,11 @@ interface FactionType : Attribute {
 
 abstract class BaseFactionType(override val name: String = "unknown") : FactionType
 
-object PlayerFaction : BaseFactionType(
-    name = "player faction")
+object BlueFaction : BaseFactionType(
+    name = "blue faction")
 
-object EnemyFaction : BaseFactionType(
-    name = "enemy faction")
+object RedFaction : BaseFactionType(
+    name = "red faction")
 
 object NeutralFaction : BaseFactionType(
     name = "neutral faction"

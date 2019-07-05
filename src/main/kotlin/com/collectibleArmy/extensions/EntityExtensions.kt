@@ -46,6 +46,9 @@ val AnyGameEntity.hasFaction: Boolean
 val AnyGameEntity.faction: FactionType
     get() = this.tryToFindAttribute(Faction::class).faction
 
+val AnyGameEntity.hasInitiative: Boolean
+    get() = this.findAttribute(Initiative::class).isPresent
+
 fun GameEntity<Combatant>.whenHasNoHealthLeft(fn: () -> Unit) {
     if (combatStats.hp <= 0) {
         fn()

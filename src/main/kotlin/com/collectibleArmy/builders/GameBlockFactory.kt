@@ -8,5 +8,7 @@ object GameBlockFactory {
 
     fun wall() = GameBlock.createWith(EntityFactory.newWall())
 
-    fun outside() = GameBlock.createWith(EntityFactory.newOutside())
+    fun redOutside() = GameBlock.createWith(EntityFactory.newRedOutside())
+    fun blueOutside() = GameBlock.createWith(EntityFactory.newBlueOutside())
+
 }

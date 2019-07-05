@@ -2,6 +2,7 @@ package com.collectibleArmy.game
 
 import com.collectibleArmy.extensions.GameEntity
 import com.collectibleArmy.extensions.faction
+import com.collectibleArmy.extensions.hasInitiative
 import com.collectibleArmy.extensions.initiative
 import org.hexworks.amethyst.api.Engine
 import org.hexworks.amethyst.api.entity.Entity
@@ -18,7 +19,7 @@ class InitiativeEngine<T : GameContext> : Engine<T> {
         logger.debug("Updating entities using context: $context.")
         entities.values.toList()
             .filter {
-                it.faction == context.command.faction
+                it.faction == context.command.faction && it.hasInitiative
             }
             .sortedBy {
                 logger.debug("Sorting entity: ${it.initiative}.")

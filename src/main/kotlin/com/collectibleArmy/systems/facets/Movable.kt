@@ -4,6 +4,7 @@ import com.collectibleArmy.attributes.types.Outside
 import com.collectibleArmy.commands.Flee
 import com.collectibleArmy.commands.MoveTo
 import com.collectibleArmy.extensions.GameCommand
+import com.collectibleArmy.extensions.faction
 import com.collectibleArmy.extensions.tryActionsOn
 import com.collectibleArmy.game.GameContext
 import org.hexworks.amethyst.api.CommandResponse
@@ -22,8 +23,8 @@ object Movable : BaseFacet<GameContext>() {
             var result: Response = Pass
             area.fetchBlockAt(position.toPosition3D(0)).map { block ->
                 result = if (block.isOccupied) {
-                    if (block.occupier.get().type == Outside) {
-                        //TODO: Only self backline cause flee, not the enemy backline
+                    val occupier = block.occupier.get()
+                    if (occupier.type == Outside && occupier.faction == entity.faction) {
                         CommandResponse(
                             Flee(
                                 context,

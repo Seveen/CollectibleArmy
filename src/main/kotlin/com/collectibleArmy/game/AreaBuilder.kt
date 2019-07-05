@@ -19,10 +19,12 @@ class AreaBuilder(private val areaSize: Size) {
     private fun makeWalls(): AreaBuilder {
         forAllPositions { pos ->
             val isEdge = pos.y == 0 || pos.y == areaSize.height - 1
-            val isOutside = pos.x == 0 || pos.x == areaSize.width - 1
+            val isRedOutside = pos.x == areaSize.width - 1
+            val isBlueOutside = pos.x == 0
             when {
                 isEdge -> blocks[pos] = GameBlockFactory.wall()
-                isOutside -> blocks[pos] = GameBlockFactory.outside()
+                isRedOutside -> blocks[pos] = GameBlockFactory.redOutside()
+                isBlueOutside -> blocks[pos] = GameBlockFactory.blueOutside()
                 else -> blocks[pos] = GameBlockFactory.floor()
             }
         }

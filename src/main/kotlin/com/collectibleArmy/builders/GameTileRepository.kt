@@ -20,10 +20,16 @@ object GameTileRepository {
         .withBackgroundColor(GameColors.WALL_BACKGROUND)
         .buildCharacterTile()
 
-    val OUTSIDE: CharacterTile = Tiles.newBuilder()
+    val RED_OUTSIDE: CharacterTile = Tiles.newBuilder()
         .withCharacter(Symbols.INTERPUNCT)
         .withForegroundColor(GameColors.FLOOR_FOREGROUND)
-        .withBackgroundColor(GameColors.OUTSIDE_BACKGROUND)
+        .withBackgroundColor(GameColors.RED_OUTSIDE_BACKGROUND)
+        .buildCharacterTile()
+
+    val BLUE_OUTSIDE: CharacterTile = Tiles.newBuilder()
+        .withCharacter(Symbols.INTERPUNCT)
+        .withForegroundColor(GameColors.FLOOR_FOREGROUND)
+        .withBackgroundColor(GameColors.BLUE_OUTSIDE_BACKGROUND)
         .buildCharacterTile()
 
     val HERO: CharacterTile = Tiles.newBuilder()
