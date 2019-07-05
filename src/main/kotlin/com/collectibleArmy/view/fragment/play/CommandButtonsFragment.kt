@@ -1,8 +1,8 @@
-package com.collectibleArmy.view.fragment
+package com.collectibleArmy.view.fragment.play
 
-import com.collectibleArmy.events.ForwardActionEvent
 import com.collectibleArmy.events.AttackActionEvent
 import com.collectibleArmy.events.DefendActionEvent
+import com.collectibleArmy.events.ForwardActionEvent
 import com.collectibleArmy.events.RetreatActionEvent
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.Fragment
@@ -13,19 +13,19 @@ import org.hexworks.zircon.internal.Zircon
 
 class CommandButtonsFragment : Fragment {
 
-    private val forwardButton = Components.button()
-     .withText("${Symbols.ARROW_RIGHT}")
-     .build().apply {
-            processComponentEvents(ComponentEventType.ACTIVATED) {
-                Zircon.eventBus.publish(ForwardActionEvent())
-            }
-        }
-
     private val retreatButton = Components.button()
         .withText("${Symbols.ARROW_LEFT}")
         .build().apply {
             processComponentEvents(ComponentEventType.ACTIVATED) {
                 Zircon.eventBus.publish(RetreatActionEvent())
+            }
+        }
+
+    private val forwardButton = Components.button()
+        .withText("${Symbols.ARROW_RIGHT}")
+        .build().apply {
+            processComponentEvents(ComponentEventType.ACTIVATED) {
+                Zircon.eventBus.publish(ForwardActionEvent())
             }
         }
 
@@ -49,8 +49,8 @@ class CommandButtonsFragment : Fragment {
         .withSpacing(1)
         .withSize(15,1)
         .build().apply {
-            addComponent(forwardButton)
             addComponent(retreatButton)
+            addComponent(forwardButton)
             addComponent(attackButton)
             addComponent(defenseButton)
         }

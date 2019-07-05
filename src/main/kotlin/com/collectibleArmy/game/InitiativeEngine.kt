@@ -22,22 +22,26 @@ class InitiativeEngine<T : GameContext> : Engine<T> {
                 it.faction == context.command.faction && it.hasInitiative
             }
             .sortedBy {
-                logger.debug("Sorting entity: ${it.initiative}.")
+                logger.debug("Sorting entity: $it, with init:${it.initiative}.")
                 it.initiative
             }
             .forEach {
-                logger.debug("Updating entity: $it.")
+                logger.debug("Updating entity: $it, with id:${it.id}.")
                 it.update(context)
             }
     }
 
     override fun addEntity(entity: Entity<EntityType, T>) {
-        logger.debug("Adding entity $entity to engine.")
+        logger.debug("Adding entity $entity to engine, with id:${entity.id}.")
         entities[entity.id] = (entity as GameEntity<EntityType>)
     }
 
     override fun removeEntity(entity: Entity<EntityType, T>) {
-        logger.debug("Removing entity $entity from engine.")
+        logger.debug("Removing entity $entity from engine, with id:${entity.id}.")
         entities.remove(entity.id)
+    }
+
+    fun clearEntities() {
+        entities.clear()
     }
 }

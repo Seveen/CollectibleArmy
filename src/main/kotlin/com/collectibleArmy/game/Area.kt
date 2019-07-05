@@ -1,12 +1,14 @@
 package com.collectibleArmy.game
 
+import com.collectibleArmy.army.Army
+import com.collectibleArmy.attributes.types.Combatant
+import com.collectibleArmy.attributes.types.NeutralFaction
 import com.collectibleArmy.blocks.GameBlock
+import com.collectibleArmy.builders.EntityFactory.buildHeroFromTemplate
+import com.collectibleArmy.builders.EntityFactory.buildSoldierFromTemplate
 import com.collectibleArmy.builders.GameBlockFactory
 import com.collectibleArmy.command.globals.GlobalCommand
-import com.collectibleArmy.extensions.GameEntity
-import com.collectibleArmy.extensions.newInitiativeEngine
-import com.collectibleArmy.extensions.position
-import org.hexworks.amethyst.api.Engine
+import com.collectibleArmy.extensions.*
 import org.hexworks.amethyst.api.Engines
 import org.hexworks.amethyst.api.entity.Entity
 import org.hexworks.amethyst.api.entity.EntityType
@@ -21,7 +23,7 @@ import org.hexworks.zircon.api.data.impl.Size3D
 import org.hexworks.zircon.api.game.GameArea
 import org.hexworks.zircon.api.screen.Screen
 
-class Area(startingBlocks: Map<Position, GameBlock>,
+class Area(val startingBlocks: Map<Position, GameBlock>,
            visibleSize: Size,
            actualSize: Size) : GameArea<Tile, GameBlock> by GameAreaBuilder.newBuilder<Tile, GameBlock>()
     .withVisibleSize(Size3D.from2DSize(visibleSize, 1))
@@ -30,20 +32,23 @@ class Area(startingBlocks: Map<Position, GameBlock>,
     .withLayersPerBlock(1)
     .build() {
 
-    private val engine: Engine<GameContext> = Engines.newInitiativeEngine()
+    private val engine: InitiativeEngine<GameContext> = Engines.newInitiativeEngine()
 
     init {
-        startingBlocks.forEach { (pos, block) ->
-            setBlockAt(Position3D.from2DPosition(pos, 0), block)
-            block.entities.forEach { entity ->
-                engine.addEntity(entity)
-                entity.position = pos
-            }
-        }
+        initStartingBlocks()
     }
 
     fun addEntity(entity: GameEntity<EntityType>, position: Position) {
         entity.position = position
+        engine.addEntity(entity)
+        fetchBlockAt(Position3D.from2DPosition(position,0)).map {
+            it.addEntity(entity)
+        }
+    }
+
+    fun addEntity(entity: GameEntity<EntityType>, position: Position, initiative: Int) {
+        entity.position = position
+        entity.initiative = initiative
         engine.addEntity(entity)
         fetchBlockAt(Position3D.from2DPosition(position,0)).map {
             it.addEntity(entity)
@@ -60,6 +65,46 @@ class Area(startingBlocks: Map<Position, GameBlock>,
 
     fun addWorldEntity(entity: Entity<EntityType, GameContext>) {
         engine.addEntity(entity)
+    }
+
+    private fun initStartingBlocks() {
+        startingBlocks.forEach { (pos, block) ->
+            setBlockAt(Position3D.from2DPosition(pos, 0), block)
+            block.entities.forEach { entity ->
+                engine.addEntity(entity)
+                entity.position = pos
+            }
+        }
+    }
+
+    fun rebuildAreaWithArmy(army: Army) {
+        fetchBlocks().forEach {
+            val block = it.block
+            if (block.isOccupied) {
+                block.occupier.get().let { entity ->
+                    entity.whenTypeIs<Combatant> {
+                        if (entity.faction != NeutralFaction) {
+                            block.removeEntity(entity)
+                            engine.removeEntity(entity)
+                            entity.position = Position.unknown()
+                        }
+                    }
+                }
+            }
+        }
+
+        loadArmy(army)
+    }
+
+    fun loadArmy(army: Army) {
+        val hero = buildHeroFromTemplate(army.heroHolder.hero, army.faction)
+        hero.initiative = army.heroHolder.initialInitiative
+        addEntity(hero, army.heroHolder.initialPosition)
+
+        army.troopHolders.forEach { holder ->
+            val soldier = buildSoldierFromTemplate(holder.soldier, army.faction)
+            addEntity(soldier, holder.initialPosition, holder.initialInitiative)
+        }
     }
 
     fun update(screen: Screen, command: GlobalCommand, game: Game) {

@@ -1,10 +1,9 @@
 package com.collectibleArmy.systems.behaviors
 
 import com.collectibleArmy.commands.MoveTo
-import com.collectibleArmy.commands.globals.Forward
-import com.collectibleArmy.commands.globals.Retreat
-import com.collectibleArmy.extensions.GameEntity
-import com.collectibleArmy.extensions.position
+import com.collectibleArmy.commands.globals.GlobalForward
+import com.collectibleArmy.commands.globals.GlobalRetreat
+import com.collectibleArmy.extensions.*
 import com.collectibleArmy.game.GameContext
 import org.hexworks.amethyst.api.base.BaseBehavior
 import org.hexworks.amethyst.api.entity.EntityType
@@ -16,10 +15,12 @@ object ForwardMover : BaseBehavior<GameContext>() {
 
     override fun update(entity: GameEntity<EntityType>, context: GameContext): Boolean {
         val (_, _, command) = context
-        val currentPos = entity.position
         when (command::class) {
-            Forward::class -> entity.moveTo(currentPos.withRelativeX(1), context)
-            Retreat::class -> entity.moveTo(currentPos.withRelativeX(-1), context)
+            GlobalForward::class -> {
+                entity.moveTo(entity.position.forward(entity.faction), context)
+            }
+            //TODO: One behavior = one global class, virer ca
+            GlobalRetreat::class -> entity.moveTo(entity.position.backward(entity.faction), context)
         }
 
         return true
@@ -29,5 +30,3 @@ object ForwardMover : BaseBehavior<GameContext>() {
         executeCommand(MoveTo(context, this, position))
     }
 }
-
-//TODO: Modify position or move to get the relative front and back from the entity faction

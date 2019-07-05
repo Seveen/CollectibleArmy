@@ -1,18 +1,19 @@
 package com.collectibleArmy.army
 
-import com.collectibleArmy.attributes.types.Hero
-import com.collectibleArmy.attributes.types.Soldier
-import com.collectibleArmy.extensions.GameEntity
+import com.collectibleArmy.army.templating.HeroTemplate
+import com.collectibleArmy.army.templating.SoldierTemplate
+import com.collectibleArmy.attributes.types.FactionType
 import org.hexworks.zircon.api.data.Position
 
 data class Army(var heroHolder: HeroHolder,
-           var troopHolders: List<SoldierHolder>)
+                var troopHolders: List<SoldierHolder>,
+                var faction: FactionType)
 
-data class HeroHolder(var hero: GameEntity<Hero>,
+data class HeroHolder(var hero: HeroTemplate,
                       var initialPosition: Position,
                       var initialInitiative: Int
 )
 
-data class SoldierHolder(var soldier: GameEntity<Soldier>,
+data class SoldierHolder(var soldier: SoldierTemplate,
                          var initialPosition: Position,
                          var initialInitiative: Int)

@@ -6,20 +6,17 @@ import com.collectibleArmy.KeyboardMapping.DefendKey
 import com.collectibleArmy.KeyboardMapping.ForwardKey
 import com.collectibleArmy.KeyboardMapping.RetreatKey
 import com.collectibleArmy.attributes.types.BlueFaction
+import com.collectibleArmy.attributes.types.RedFaction
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.command.globals.GlobalCommand
-import com.collectibleArmy.commands.globals.Attack
-import com.collectibleArmy.commands.globals.Defend
-import com.collectibleArmy.commands.globals.Forward
-import com.collectibleArmy.commands.globals.Retreat
-import com.collectibleArmy.events.ForwardActionEvent
+import com.collectibleArmy.commands.globals.GlobalAttack
+import com.collectibleArmy.commands.globals.GlobalDefend
+import com.collectibleArmy.commands.globals.GlobalForward
+import com.collectibleArmy.commands.globals.GlobalRetreat
+import com.collectibleArmy.events.*
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
-import com.collectibleArmy.view.fragment.CommandButtonsFragment
-import com.collectibleArmy.events.AttackActionEvent
-import com.collectibleArmy.events.DefendActionEvent
-import com.collectibleArmy.events.GameLogEvent
-import com.collectibleArmy.events.RetreatActionEvent
+import com.collectibleArmy.view.fragment.play.CommandButtonsFragment
 import org.hexworks.cobalt.events.api.subscribe
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.GameComponents
@@ -29,11 +26,12 @@ import org.hexworks.zircon.api.extensions.box
 import org.hexworks.zircon.api.extensions.handleKeyboardEvents
 import org.hexworks.zircon.api.game.ProjectionMode
 import org.hexworks.zircon.api.mvc.base.BaseView
+import org.hexworks.zircon.api.uievent.KeyCode
 import org.hexworks.zircon.api.uievent.KeyboardEventType
 import org.hexworks.zircon.api.uievent.Processed
 import org.hexworks.zircon.internal.Zircon
 
-class PlayView(private val game: Game = GameBuilder.defaultGame()) : BaseView() {
+class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
 
     override val theme = GameConfig.THEME
 
@@ -73,11 +71,17 @@ class PlayView(private val game: Game = GameBuilder.defaultGame()) : BaseView() 
         screen.handleKeyboardEvents(KeyboardEventType.KEY_PRESSED) { event, _ ->
             var command: GlobalCommand? = null
 
+            //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
+
             when (event.code) {
-                ForwardKey -> command = Forward(BlueFaction)
-                RetreatKey -> command = Retreat(BlueFaction)
-                AttackKey -> command = Attack(BlueFaction)
-                DefendKey -> command = Defend(BlueFaction)
+                ForwardKey -> command = GlobalForward(BlueFaction)
+                RetreatKey -> command = GlobalRetreat(BlueFaction)
+                AttackKey -> command = GlobalAttack(BlueFaction)
+                DefendKey -> command = GlobalDefend(BlueFaction)
+                KeyCode.KEY_A -> command = GlobalForward(RedFaction)
+                KeyCode.KEY_S -> command = GlobalRetreat(RedFaction)
+                KeyCode.KEY_D -> command = GlobalAttack(RedFaction)
+                KeyCode.KEY_F -> command = GlobalDefend(RedFaction)
             }
 
             if (command != null) {
@@ -89,25 +93,25 @@ class PlayView(private val game: Game = GameBuilder.defaultGame()) : BaseView() 
 
         Zircon.eventBus.subscribe<AttackActionEvent> {
             game.area.update(screen,
-                Attack(BlueFaction),
+                GlobalAttack(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<DefendActionEvent> {
             game.area.update(screen,
-                Defend(BlueFaction),
+                GlobalDefend(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<ForwardActionEvent> {
             game.area.update(screen,
-                Forward(BlueFaction),
+                GlobalForward(BlueFaction),
                 game)
         }
 
         Zircon.eventBus.subscribe<RetreatActionEvent> {
             game.area.update(screen,
-                Retreat(BlueFaction),
+                GlobalRetreat(BlueFaction),
                 game)
         }
     }

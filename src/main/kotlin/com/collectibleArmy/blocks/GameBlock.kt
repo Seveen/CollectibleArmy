@@ -50,6 +50,10 @@ class GameBlock(private var defaultTile: Tile = GameTileRepository.FLOOR,
         currentEntities.remove(entity)
     }
 
+    fun clearEntities() {
+        currentEntities.clear()
+    }
+
     override fun fetchSide(side: BlockSide): Tile {
         return GameTileRepository.EMPTY
     }

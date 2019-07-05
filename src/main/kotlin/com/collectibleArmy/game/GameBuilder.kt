@@ -2,8 +2,9 @@ package com.collectibleArmy.game
 
 import com.collectibleArmy.army.Army
 import com.collectibleArmy.army.ArmyBuilder
-import com.collectibleArmy.builders.EntityFactory
-import com.collectibleArmy.extensions.initiative
+import com.collectibleArmy.army.templating.*
+import com.collectibleArmy.attributes.types.BlueFaction
+import com.collectibleArmy.attributes.types.RedFaction
 import org.hexworks.zircon.api.Sizes
 import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Size
@@ -12,54 +13,41 @@ class GameBuilder(val worldSize: Size) {
 
     private val visibleSize = worldSize
 
-    private lateinit var playerArmy: Army
-    private lateinit var enemyArmy: Army
+    private var blueArmy: Army? = null
+    private var redArmy: Army? = null
 
     private val area = AreaBuilder(worldSize)
         .makeArena()
         .build(visibleSize = visibleSize)
 
-    fun withPlayerArmy(army: Army): GameBuilder {
-        playerArmy = army
+    fun withBlueArmy(army: Army): GameBuilder {
+        blueArmy = army
         return this
     }
 
-    fun withEnemyArmy(army: Army): GameBuilder {
-        enemyArmy = army
+    fun withRedArmy(army: Army): GameBuilder {
+        redArmy = army
         return this
     }
 
     fun buildGame(): Game {
         prepareWorld()
 
-        loadArmies(playerArmy, enemyArmy)
+        blueArmy?.let {
+            area.loadArmy(it)
+        }
+
+        redArmy?.let {
+            area.loadArmy(it)
+        }
 
         return Game.create(
-            playerArmy = playerArmy,
-            enemyArmy = enemyArmy,
             area = area
         )
     }
 
     private fun prepareWorld() = also {
         area.scrollUpBy(area.actualSize().zLength)
-    }
-
-    private fun loadArmies(playerArmy: Army, enemyArmy: Army) {
-        playerArmy.heroHolder.hero.initiative = playerArmy.heroHolder.initialInitiative
-        area.addEntity(playerArmy.heroHolder.hero, playerArmy.heroHolder.initialPosition)
-
-        enemyArmy.heroHolder.hero.initiative = enemyArmy.heroHolder.initialInitiative
-        area.addEntity(enemyArmy.heroHolder.hero, enemyArmy.heroHolder.initialPosition)
-
-        playerArmy.troopHolders.forEach {
-            it.soldier.initiative = it.initialInitiative
-            area.addEntity(it.soldier, it.initialPosition)
-        }
-
-        enemyArmy.troopHolders.forEach {
-            area.addEntity(it.soldier, it.initialPosition)
-        }
     }
 
     companion object {
@@ -82,32 +70,115 @@ class GameBuilder(val worldSize: Size) {
 
         private val defaultPlayerArmy = ArmyBuilder()
             .withHero(
-                EntityFactory.newDummyHero(),
+                HeroTemplate(
+                    name = "Hero",
+                    tile = TileTemplate(
+                        char = '@',
+                        foregroundColor = "#440000",
+                        backGroundColor = "#000000"
+                    ),
+                    stats = StatsTemplate(
+                        attack = 2,
+                        defense = 1,
+                        hp = 10
+                    ),
+                    behaviors = BehaviorsTemplate(
+                        forward = "ForwardMover",
+                        backward = "",
+                        attack = "SimpleAttacker",
+                        defend = ""
+                    )
+                ),
                 Position.create(3,3),
                 1)
             .withSoldier(
-                EntityFactory.newDummySoldier(),
+                SoldierTemplate(
+                    name = "Soldier",
+                    tile = TileTemplate(
+                        char = 'S',
+                        foregroundColor = "#440000",
+                        backGroundColor = "#000000"
+                    ),
+                    stats = StatsTemplate(
+                        attack = 2,
+                        defense = 1,
+                        hp = 10
+                    ),
+                    behaviors = BehaviorsTemplate(
+                        forward = "ForwardMover",
+                        backward = "",
+                        attack = "SimpleAttacker",
+                        defend = ""
+                    )
+                ),
                 Position.create(3,2),
                 2
             )
             .withSoldier(
-                EntityFactory.newDummySoldier(),
+                SoldierTemplate(
+                    name = "Soldier",
+                    tile = TileTemplate(
+                        char = 'S',
+                        foregroundColor = "#440000",
+                        backGroundColor = "#000000"
+                    ),
+                    stats = StatsTemplate(
+                        attack = 2,
+                        defense = 1,
+                        hp = 10
+                    ),
+                    behaviors = BehaviorsTemplate(
+                        forward = "ForwardMover",
+                        backward = "",
+                        attack = "SimpleAttacker",
+                        defend = ""
+                    )
+                ),
                 Position.create(3,4),
                 3
             )
+            .withFaction(BlueFaction)
             .build()
 
         private val defaultEnemyArmy = ArmyBuilder()
             .withHero(
-                EntityFactory.newDummyVillain(),
+                HeroTemplate(
+                    name = "Villain",
+                    tile = TileTemplate(
+                        char = '@',
+                        foregroundColor = "#440033",
+                        backGroundColor = "#000000"
+                    ),
+                    stats = StatsTemplate(
+                        attack = 2,
+                        defense = 1,
+                        hp = 10
+                    ),
+                    behaviors = BehaviorsTemplate(
+                        forward = "ForwardMover",
+                        backward = "",
+                        attack = "SimpleAttacker",
+                        defend = ""
+                    )
+                ),
                 Position.create(8,3),
                 1)
+            .withFaction(RedFaction)
             .build()
 
         fun defaultGame() = GameBuilder(
             worldSize = Sizes.create(12, 7))
-            .withEnemyArmy(defaultEnemyArmy)
-            .withPlayerArmy(defaultPlayerArmy)
+            .withRedArmy(defaultEnemyArmy)
+            .withBlueArmy(defaultPlayerArmy)
+            .buildGame()
+
+        fun defaultEditorGame() = GameBuilder(
+            worldSize = Sizes.create(12,7))
+            .buildGame()
+
+        fun editorGame(army: Army) = GameBuilder(
+            worldSize = Sizes.create(12,7))
+            .withBlueArmy(army)
             .buildGame()
     }
 }
