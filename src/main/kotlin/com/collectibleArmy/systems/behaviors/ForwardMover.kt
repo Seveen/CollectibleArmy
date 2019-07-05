@@ -29,3 +29,5 @@ object ForwardMover : BaseBehavior<GameContext>() {
         executeCommand(MoveTo(context, this, position))
     }
 }
+
+//TODO: Modify position or move to get the relative front and back from the entity faction

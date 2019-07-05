@@ -1,13 +1,13 @@
 package com.collectibleArmy.builders
 
 import com.collectibleArmy.attributes.*
+import com.collectibleArmy.attributes.flags.BlockOccupier
 import com.collectibleArmy.attributes.types.*
+import com.collectibleArmy.commands.Attack
 import com.collectibleArmy.game.GameContext
 import com.collectibleArmy.systems.behaviors.BehaviorsToStringMap
 import com.collectibleArmy.systems.behaviors.ForwardMover
-import com.collectibleArmy.systems.facets.FacetsToStringMap
-import com.collectibleArmy.systems.facets.Fleeable
-import com.collectibleArmy.systems.facets.Movable
+import com.collectibleArmy.systems.facets.*
 import org.hexworks.amethyst.api.Entities
 import org.hexworks.amethyst.api.builder.EntityBuilder
 import org.hexworks.amethyst.api.entity.EntityType
@@ -40,6 +40,12 @@ object EntityFactory {
 
     fun newDummyHero() = newGameEntityOfType(Hero("Hero")) {
         attributes(
+            EntityActions(Attack::class),
+            CombatStats.create(
+                maxHp = 10,
+                attackValue = 2,
+                defenseValue = 1
+            ),
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.HERO),
@@ -47,11 +53,17 @@ object EntityFactory {
             Initiative()
         )
         behaviors(ForwardMover)
-        facets(Movable)
+        facets(Movable, Attackable, Destructible)
     }
 
     fun newDummySoldier() = newGameEntityOfType(Soldier("Soldier")) {
         attributes(
+            EntityActions(Attack::class),
+            CombatStats.create(
+                maxHp = 5,
+                attackValue = 2,
+                defenseValue = 0
+            ),
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.SOLDIER),
@@ -59,11 +71,17 @@ object EntityFactory {
             Initiative()
         )
         behaviors(ForwardMover)
-        facets(Movable, Fleeable)
+        facets(Movable, Fleeable, Attackable, Destructible)
     }
 
     fun newDummyVillain() = newGameEntityOfType(Hero("Villain")) {
         attributes(
+            EntityActions(Attack::class),
+            CombatStats.create(
+                maxHp = 10,
+                attackValue = 2,
+                defenseValue = 1
+            ),
             EntityPosition(),
             BlockOccupier,
             EntityTile(GameTileRepository.VILLAIN),
@@ -71,7 +89,7 @@ object EntityFactory {
             Initiative()
         )
         behaviors(ForwardMover)
-        facets(Movable)
+        facets(Movable, Attackable, Destructible)
     }
 
 //    fun buildHeroFromTemplate(template: HeroTemplate): GameEntity<Hero> {

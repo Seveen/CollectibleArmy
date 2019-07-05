@@ -1,7 +1,10 @@
 package com.collectibleArmy.extensions
 
 import com.collectibleArmy.attributes.*
+import com.collectibleArmy.attributes.flags.BlockOccupier
+import com.collectibleArmy.attributes.types.Combatant
 import com.collectibleArmy.attributes.types.FactionType
+import com.collectibleArmy.attributes.types.combatStats
 import com.collectibleArmy.game.GameContext
 import org.hexworks.amethyst.api.Attribute
 import org.hexworks.amethyst.api.Consumed
@@ -42,6 +45,26 @@ val AnyGameEntity.hasFaction: Boolean
 
 val AnyGameEntity.faction: FactionType
     get() = this.tryToFindAttribute(Faction::class).faction
+
+fun GameEntity<Combatant>.whenHasNoHealthLeft(fn: () -> Unit) {
+    if (combatStats.hp <= 0) {
+        fn()
+    }
+}
+
+val AnyGameEntity.attackValue: Int
+    get() {
+        val combat = findAttribute(CombatStats::class).map { it.attackValue }.orElse(0)
+
+        return combat
+    }
+
+val AnyGameEntity.defenseValue: Int
+    get() {
+        val combat = findAttribute(CombatStats::class).map { it.defenseValue }.orElse(0)
+
+        return combat
+    }
 
 fun AnyGameEntity.tryActionsOn(context: GameContext, target: AnyGameEntity): Response {
     var result: Response = Pass

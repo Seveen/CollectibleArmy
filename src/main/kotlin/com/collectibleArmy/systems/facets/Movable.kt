@@ -42,4 +42,4 @@ object Movable : BaseFacet<GameContext>() {
         }
 }
 
-//TODO: Modify position or move to get the relative front and back from the entity faction
+
