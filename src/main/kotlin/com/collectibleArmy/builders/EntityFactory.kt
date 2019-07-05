@@ -107,27 +107,6 @@ object EntityFactory {
         facets(Movable, Attackable, Destructible)
     }
 
-    //TODO: PAS DE DEEP COPY, LES ATTRIBUTS SONT PARTAGES. GO FAIRE UN VRAI CREATE FROM TEMPLATE NOW
-    fun cloneSoldier(entity: GameEntity<Soldier>) = newGameEntityOfType(Soldier(entity.name)) {
-        attributes(*entity.attributes.toList().toTypedArray().copyOf())
-        behaviors(*entity.behaviors.toList().toTypedArray().copyOf())
-        facets(*entity.facets.toList().toTypedArray().copyOf())
-    }
-
-    fun cloneHero(entity: GameEntity<Hero>) = newGameEntityOfType(Hero(entity.name)) {
-        attributes(*entity.attributes.toList().toTypedArray().copyOf())
-        behaviors(*entity.behaviors.toList().toTypedArray().copyOf())
-        facets(*entity.facets.toList().toTypedArray().copyOf())
-    }
-
-//    fun buildHeroFromTemplate(template: HeroTemplate): GameEntity<Hero> {
-//        return newGameEntityOfType(Hero(template.name)) {
-//            attributes
-//            behaviors
-//            facets
-//        }
-//    }
-
     fun buildSoldierFromTemplate(template: SoldierTemplate, faction: FactionType): GameEntity<Soldier> {
         val completeBehaviorPath = "com.collectibleArmy.systems.behaviors."
 
