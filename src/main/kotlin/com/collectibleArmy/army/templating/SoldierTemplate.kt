@@ -9,3 +9,4 @@ data class SoldierTemplate(
     override var stats: StatsTemplate,
     override var behaviors: BehaviorsTemplate
 ): Template
+

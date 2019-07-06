@@ -4,7 +4,10 @@ import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.Army
 import com.collectibleArmy.army.HeroHolder
 import com.collectibleArmy.army.SoldierHolder
-import com.collectibleArmy.army.templating.*
+import com.collectibleArmy.army.templating.HeroTemplate
+import com.collectibleArmy.army.templating.SoldierTemplate
+import com.collectibleArmy.army.templating.Template
+import com.collectibleArmy.army.templating.TemplateLoading
 import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.events.GameLogEvent
@@ -33,91 +36,17 @@ import org.hexworks.zircon.internal.Zircon
 class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : BaseView() {
 
     override val theme = GameConfig.THEME
-    var selectedEntity: Template? = null
-    val soldiersList = listOf(
-        SoldierTemplate(
-            name = "Soldier",
-            tile = TileTemplate(
-                char = 's',
-                foregroundColor = "#770070",
-                backGroundColor = "#1e2320"
-            ),
-            stats = StatsTemplate(
-                attack = 2,
-                defense = 1,
-                hp = 10
-            ),
-            behaviors = BehaviorsTemplate(
-                forward = "ForwardMover",
-                backward = "",
-                attack = "SimpleAttacker",
-                defend = ""
-            )
-        ),
-        SoldierTemplate(
-            name = "Grunt",
-            tile = TileTemplate(
-                char = 'g',
-                foregroundColor = "#770070",
-                backGroundColor = "#1e2320"
-            ),
-            stats = StatsTemplate(
-                attack = 2,
-                defense = 1,
-                hp = 10
-            ),
-            behaviors = BehaviorsTemplate(
-                forward = "ForwardMover",
-                backward = "",
-                attack = "SimpleAttacker",
-                defend = ""
-            )
-        ),
-        SoldierTemplate(
-            name = "Knight",
-            tile = TileTemplate(
-                char = 'K',
-                foregroundColor = "#FFA500",
-                backGroundColor = "#1e2320"
-            ),
-            stats = StatsTemplate(
-                attack = 2,
-                defense = 1,
-                hp = 10
-            ),
-            behaviors = BehaviorsTemplate(
-                forward = "ForwardMover",
-                backward = "",
-                attack = "SimpleAttacker",
-                defend = ""
-            )
-        )
-    )
-    val heroesList = listOf(
-        HeroTemplate(
-            name = "Hero",
-            tile = TileTemplate(
-                char = '@',
-                foregroundColor = "#FFFFFF",
-                backGroundColor = "#1e2320"
-            ),
-            stats = StatsTemplate(
-                attack = 2,
-                defense = 1,
-                hp = 10
-            ),
-            behaviors = BehaviorsTemplate(
-                forward = "ForwardMover",
-                backward = "",
-                attack = "SimpleAttacker",
-                defend = ""
-            )
-        )
-    )
-    var displayedList = listOf<Template>()
 
-    var hero: HeroHolder? = null
-    var soldiers = mutableListOf<SoldierHolder>()
+    private var selectedEntity: Template? = null
+
+    private val templateLoader = TemplateLoading()
+    private val soldiersList = templateLoader.loadSoldierTemplates()
+    private val heroesList = templateLoader.loadHeroTemplates()
+
+    private var displayedList = listOf<Template>()
+
+    private var hero: HeroHolder? = null
+    private var soldiers = mutableListOf<SoldierHolder>()
 
     override fun onDock() {
         displayedList = heroesList

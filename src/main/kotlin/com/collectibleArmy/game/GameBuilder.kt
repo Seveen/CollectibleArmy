@@ -75,7 +75,7 @@ class GameBuilder(val worldSize: Size) {
                     tile = TileTemplate(
                         char = '@',
                         foregroundColor = "#440000",
-                        backGroundColor = "#000000"
+                        backgroundColor = "#000000"
                     ),
                     stats = StatsTemplate(
                         attack = 2,
@@ -97,7 +97,7 @@ class GameBuilder(val worldSize: Size) {
                     tile = TileTemplate(
                         char = 'S',
                         foregroundColor = "#440000",
-                        backGroundColor = "#000000"
+                        backgroundColor = "#000000"
                     ),
                     stats = StatsTemplate(
                         attack = 2,
@@ -120,7 +120,7 @@ class GameBuilder(val worldSize: Size) {
                     tile = TileTemplate(
                         char = 'S',
                         foregroundColor = "#440000",
-                        backGroundColor = "#000000"
+                        backgroundColor = "#000000"
                     ),
                     stats = StatsTemplate(
                         attack = 2,
@@ -147,7 +147,7 @@ class GameBuilder(val worldSize: Size) {
                     tile = TileTemplate(
                         char = '@',
                         foregroundColor = "#440033",
-                        backGroundColor = "#000000"
+                        backgroundColor = "#000000"
                     ),
                     stats = StatsTemplate(
                         attack = 2,

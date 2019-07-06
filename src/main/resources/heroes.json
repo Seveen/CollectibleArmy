@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Hero",
+    "tile": {
+      "char": "@",
+      "backgroundColor": "#000000",
+      "foregroundColor": "#444444"
+    },
+    "stats": {
+      "attack": 2,
+      "defense": 1,
+      "hp": 10
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "backward": "BackwardMover",
+      "attack": "SimpleAttacker",
+      "defend": "SimpleDefender"
+    }
+  }
+]

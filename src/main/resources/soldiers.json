@@ -1,0 +1,59 @@
+[
+  {
+    "name": "Soldier",
+    "tile": {
+      "char": "s",
+      "backgroundColor": "#1e2320",
+      "foregroundColor": "#770070"
+    },
+    "stats": {
+      "attack": 2,
+      "defense": 1,
+      "hp": 10
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "backward": "",
+      "attack": "SimpleAttacker",
+      "defend": ""
+    }
+  },
+  {
+    "name": "Grunt",
+    "tile": {
+      "char": "g",
+      "backgroundColor": "#1e2320",
+      "foregroundColor": "#770070"
+    },
+    "stats": {
+      "attack": 2,
+      "defense": 1,
+      "hp": 10
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "backward": "",
+      "attack": "SimpleAttacker",
+      "defend": ""
+    }
+  },
+  {
+    "name": "Knight",
+    "tile": {
+      "char": "K",
+      "backgroundColor": "#1e2320",
+      "foregroundColor": "#FFA500"
+    },
+    "stats": {
+      "attack": 2,
+      "defense": 1,
+      "hp": 10
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "backward": "",
+      "attack": "SimpleAttacker",
+      "defend": ""
+    }
+  }
+]

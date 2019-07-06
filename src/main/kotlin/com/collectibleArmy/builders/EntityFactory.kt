@@ -113,7 +113,7 @@ object EntityFactory {
         val tile = Tiles.newBuilder()
             .withCharacter(template.tile.char)
             .withForegroundColor(TileColors.fromString(template.tile.foregroundColor))
-            .withBackgroundColor(TileColors.fromString(template.tile.backGroundColor))
+            .withBackgroundColor(TileColors.fromString(template.tile.backgroundColor))
             .buildCharacterTile()
 
         val forwardBehavior = Class.forName(
@@ -149,7 +149,7 @@ object EntityFactory {
         val tile = Tiles.newBuilder()
             .withCharacter(template.tile.char)
             .withForegroundColor(TileColors.fromString(template.tile.foregroundColor))
-            .withBackgroundColor(TileColors.fromString(template.tile.backGroundColor))
+            .withBackgroundColor(TileColors.fromString(template.tile.backgroundColor))
             .buildCharacterTile()
 
         val forwardBehavior = Class.forName(
