@@ -13,7 +13,7 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "",
+      "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
     }
@@ -32,7 +32,7 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "",
+      "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
     }
@@ -51,7 +51,7 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "",
+      "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
     }

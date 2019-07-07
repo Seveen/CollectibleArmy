@@ -11,6 +11,7 @@ import com.collectibleArmy.army.templating.TemplateLoading
 import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.events.GameLogEvent
+import com.collectibleArmy.extensions.isWithin
 import com.collectibleArmy.extensions.whenTypeIs
 import com.collectibleArmy.functions.logGameEvent
 import com.collectibleArmy.game.Game
@@ -23,6 +24,7 @@ import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.GameComponents
 import org.hexworks.zircon.api.component.ComponentAlignment
 import org.hexworks.zircon.api.component.Panel
+import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Tile
 import org.hexworks.zircon.api.extensions.handleMouseEvents
 import org.hexworks.zircon.api.extensions.processComponentEvents
@@ -34,6 +36,8 @@ import org.hexworks.zircon.api.uievent.Processed
 import org.hexworks.zircon.internal.Zircon
 
 class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : BaseView() {
+    //TODO: Add initiative display and a way to order units
+    //TODO: Add load and save army functionality
 
     override val theme = GameConfig.THEME
 
@@ -107,21 +111,22 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
 
         gameComponent.handleMouseEvents(MouseEventType.MOUSE_PRESSED) { event, _ ->
             val area = game.area
-            //TODO : restrain click to 1:1 5:5
+
             val clickPosition = area.screenToWorldPosition(event.position, gameComponent.position)
-            println(clickPosition)
+            if (clickPosition.isWithin(Position.create(1,1), Position.create(5,5))) {
 
-            selectedEntity?.whenTypeIs<HeroTemplate> {
-                hero = HeroHolder(it as HeroTemplate, clickPosition, 1)
-                refreshGameComponent()
-            }
-
-            selectedEntity?.whenTypeIs<SoldierTemplate> {
-                if (hero != null) {
-                    soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition, soldiers.size + 2))
+                selectedEntity?.whenTypeIs<HeroTemplate> {
+                    hero = HeroHolder(it as HeroTemplate, clickPosition, 1)
                     refreshGameComponent()
-                } else {
-                    logGameEvent("Select a hero first!")
+                }
+
+                selectedEntity?.whenTypeIs<SoldierTemplate> {
+                    if (hero != null) {
+                        soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition, soldiers.size + 2))
+                        refreshGameComponent()
+                    } else {
+                        logGameEvent("Select a hero first!")
+                    }
                 }
             }
 

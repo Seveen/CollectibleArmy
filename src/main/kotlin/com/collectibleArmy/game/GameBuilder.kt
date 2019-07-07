@@ -52,22 +52,6 @@ class GameBuilder(val worldSize: Size) {
 
     companion object {
 
-        //Todo: Take some time to reimplement that template system
-//        val defaultHeroTemplate = HeroTemplate(
-////            name = "Dumbass",
-////            attributes = listOf(
-////                "EntityPosition",
-////                "BlockOccupier",
-////                "EntityTile"
-////            ),
-////            behaviors = listOf(
-////                "ForwardMover"
-////            ),
-////            facets = listOf(
-////                "Movable"
-////            )
-////        )
-
         private val defaultPlayerArmy = ArmyBuilder()
             .withHero(
                 HeroTemplate(

@@ -26,3 +26,10 @@ fun Position.backward(side: FactionType): Position {
         else -> this
     }
 }
+
+fun Position.isWithin(lower: Position, higher: Position) : Boolean{
+    return lower.x <= x &&
+            lower.y <= y &&
+            x <= higher.x &&
+            y <= higher.y
+}

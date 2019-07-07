@@ -8,6 +8,5 @@ class ArmySaver {
 
     fun save(army: Army) {
 
-
     }
 }

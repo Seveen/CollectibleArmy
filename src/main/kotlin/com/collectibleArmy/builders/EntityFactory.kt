@@ -8,8 +8,6 @@ import com.collectibleArmy.attributes.types.*
 import com.collectibleArmy.commands.Attack
 import com.collectibleArmy.extensions.GameEntity
 import com.collectibleArmy.game.GameContext
-import com.collectibleArmy.systems.behaviors.ForwardMover
-import com.collectibleArmy.systems.behaviors.SimpleAttacker
 import com.collectibleArmy.systems.facets.Attackable
 import com.collectibleArmy.systems.facets.Destructible
 import com.collectibleArmy.systems.facets.Fleeable
@@ -53,60 +51,6 @@ object EntityFactory {
         )
     }
 
-    fun newDummyHero() = newGameEntityOfType(Hero("Hero")) {
-        attributes(
-            EntityActions(Attack::class),
-            CombatStats.create(
-                maxHp = 10,
-                attackValue = 2,
-                defenseValue = 1
-            ),
-            EntityPosition(),
-            BlockOccupier,
-            EntityTile(GameTileRepository.HERO),
-            Faction(BlueFaction),
-            Initiative()
-        )
-        behaviors(ForwardMover, SimpleAttacker)
-        facets(Movable, Attackable, Destructible)
-    }
-
-    fun newDummySoldier() = newGameEntityOfType(Soldier("Soldier")) {
-        attributes(
-            EntityActions(Attack::class),
-            CombatStats.create(
-                maxHp = 5,
-                attackValue = 2,
-                defenseValue = 0
-            ),
-            EntityPosition(),
-            BlockOccupier,
-            EntityTile(GameTileRepository.SOLDIER),
-            Faction(BlueFaction),
-            Initiative()
-        )
-        behaviors(ForwardMover, SimpleAttacker)
-        facets(Movable, Fleeable, Attackable, Destructible)
-    }
-
-    fun newDummyVillain() = newGameEntityOfType(Hero("Villain")) {
-        attributes(
-            EntityActions(Attack::class),
-            CombatStats.create(
-                maxHp = 10,
-                attackValue = 2,
-                defenseValue = 1
-            ),
-            EntityPosition(),
-            BlockOccupier,
-            EntityTile(GameTileRepository.VILLAIN),
-            Faction(RedFaction),
-            Initiative()
-        )
-        behaviors(ForwardMover, SimpleAttacker)
-        facets(Movable, Attackable, Destructible)
-    }
-
     fun buildSoldierFromTemplate(template: SoldierTemplate, faction: FactionType): GameEntity<Soldier> {
         val completeBehaviorPath = "com.collectibleArmy.systems.behaviors."
 
@@ -118,6 +62,9 @@ object EntityFactory {
 
         val forwardBehavior = Class.forName(
             completeBehaviorPath + template.behaviors.forward).kotlin
+
+        val backwardBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.backward).kotlin
 
         val attackBehavior = Class.forName(
             completeBehaviorPath + template.behaviors.attack).kotlin
@@ -138,8 +85,15 @@ object EntityFactory {
             )
             behaviors(
                 forwardBehavior.objectInstance as Behavior<GameContext>,
-                attackBehavior.objectInstance as Behavior<GameContext>)
-            facets(Movable, Fleeable, Attackable, Destructible)
+                backwardBehavior.objectInstance as Behavior<GameContext>,
+                attackBehavior.objectInstance as Behavior<GameContext>
+            )
+            facets(
+                Movable,
+                Fleeable,
+                Attackable,
+                Destructible
+            )
         }
     }
 
@@ -154,6 +108,9 @@ object EntityFactory {
 
         val forwardBehavior = Class.forName(
             completeBehaviorPath + template.behaviors.forward).kotlin
+
+        val backwardBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.backward).kotlin
 
         val attackBehavior = Class.forName(
             completeBehaviorPath + template.behaviors.attack).kotlin
@@ -175,10 +132,16 @@ object EntityFactory {
                 Initiative()
             )
             behaviors(
-                //TODO: Class should have a single no-arg constructor:?????
                 forwardBehavior.objectInstance as Behavior<GameContext>,
-                attackBehavior.objectInstance as Behavior<GameContext>)
-            facets(Movable, Fleeable, Attackable, Destructible)
+                backwardBehavior.objectInstance as Behavior<GameContext>,
+                attackBehavior.objectInstance as Behavior<GameContext>
+            )
+            facets(
+                Movable,
+                Fleeable,
+                Attackable,
+                Destructible
+            )
         }
     }
 }
