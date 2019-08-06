@@ -8,11 +8,7 @@ import com.collectibleArmy.KeyboardMapping.RetreatKey
 import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.attributes.types.RedFaction
 import com.collectibleArmy.blocks.GameBlock
-import com.collectibleArmy.command.globals.GlobalCommand
-import com.collectibleArmy.commands.globals.GlobalAttack
-import com.collectibleArmy.commands.globals.GlobalDefend
-import com.collectibleArmy.commands.globals.GlobalForward
-import com.collectibleArmy.commands.globals.GlobalRetreat
+import com.collectibleArmy.commands.globals.*
 import com.collectibleArmy.events.*
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
@@ -34,6 +30,9 @@ import org.hexworks.zircon.internal.Zircon
 class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
 
     override val theme = GameConfig.THEME
+
+    //TODO: Add a select army view
+    //TODO: Add a select level view
 
     override fun onDock() {
         val logArea = Components.logArea()
@@ -73,15 +72,16 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
 
             //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
 
-            when (event.code) {
-                ForwardKey -> command = GlobalForward(BlueFaction)
-                RetreatKey -> command = GlobalRetreat(BlueFaction)
-                AttackKey -> command = GlobalAttack(BlueFaction)
-                DefendKey -> command = GlobalDefend(BlueFaction)
-                KeyCode.KEY_A -> command = GlobalForward(RedFaction)
-                KeyCode.KEY_S -> command = GlobalRetreat(RedFaction)
-                KeyCode.KEY_D -> command = GlobalAttack(RedFaction)
-                KeyCode.KEY_F -> command = GlobalDefend(RedFaction)
+             command = when (event.code) {
+                ForwardKey -> GlobalForward(BlueFaction)
+                RetreatKey -> GlobalRetreat(BlueFaction)
+                AttackKey -> GlobalAttack(BlueFaction)
+                DefendKey -> GlobalDefend(BlueFaction)
+                KeyCode.KEY_A -> GlobalForward(RedFaction)
+                KeyCode.KEY_S -> GlobalRetreat(RedFaction)
+                KeyCode.KEY_D -> GlobalAttack(RedFaction)
+                KeyCode.KEY_F -> GlobalDefend(RedFaction)
+                else -> null
             }
 
             if (command != null) {

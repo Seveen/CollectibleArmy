@@ -1,13 +1,12 @@
 package com.collectibleArmy.game
 
 import com.collectibleArmy.army.Army
-import com.collectibleArmy.attributes.types.Combatant
-import com.collectibleArmy.attributes.types.NeutralFaction
+import com.collectibleArmy.attributes.types.*
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.builders.EntityFactory.buildHeroFromTemplate
 import com.collectibleArmy.builders.EntityFactory.buildSoldierFromTemplate
 import com.collectibleArmy.builders.GameBlockFactory
-import com.collectibleArmy.command.globals.GlobalCommand
+import com.collectibleArmy.commands.globals.GlobalCommand
 import com.collectibleArmy.extensions.*
 import org.hexworks.amethyst.api.Engines
 import org.hexworks.amethyst.api.entity.Entity
@@ -77,7 +76,7 @@ class Area(val startingBlocks: Map<Position, GameBlock>,
         }
     }
 
-    fun rebuildAreaWithArmy(army: Army) {
+    fun rebuildAreaWithArmies(blueArmy: Army?, redArmy: Army?) {
         fetchBlocks().forEach {
             val block = it.block
             if (block.isOccupied) {
@@ -93,16 +92,23 @@ class Area(val startingBlocks: Map<Position, GameBlock>,
             }
         }
 
-        loadArmy(army)
+        blueArmy?.let {
+            loadArmy(it, BlueFaction)
+        }
+
+        redArmy?.let {
+            loadArmy(it, RedFaction)
+        }
+
     }
 
-    fun loadArmy(army: Army) {
-        val hero = buildHeroFromTemplate(army.heroHolder.hero, army.faction)
+    fun loadArmy(army: Army, faction: FactionType) {
+        val hero = buildHeroFromTemplate(army.heroHolder.hero, faction)
         hero.initiative = army.heroHolder.initialInitiative
         addEntity(hero, army.heroHolder.initialPosition)
 
         army.troopHolders.forEach { holder ->
-            val soldier = buildSoldierFromTemplate(holder.soldier, army.faction)
+            val soldier = buildSoldierFromTemplate(holder.soldier, faction)
             addEntity(soldier, holder.initialPosition, holder.initialInitiative)
         }
     }

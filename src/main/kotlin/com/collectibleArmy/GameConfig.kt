@@ -7,7 +7,7 @@ import org.hexworks.zircon.api.Sizes
 
 object GameConfig {
     val TILESET = CP437TilesetResources.rogueYun16x16()
-    val THEME = ColorThemes.ancestry()
+    val THEME = ColorThemes.zenburnVanilla()
 
     const val WINDOW_WIDTH =  80
     const val WINDOW_HEIGHT = 50

@@ -17,5 +17,24 @@
       "attack": "SimpleAttacker",
       "defend": "SimpleDefender"
     }
+  },
+  {
+    "name": "Violaine",
+    "tile": {
+      "char": "@",
+      "backgroundColor": "#000000",
+      "foregroundColor": "#FF4400"
+    },
+    "stats": {
+      "attack": 2000,
+      "defense": 1000,
+      "hp": 10000
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "backward": "BackwardMover",
+      "attack": "SimpleAttacker",
+      "defend": "SimpleDefender"
+    }
   }
 ]

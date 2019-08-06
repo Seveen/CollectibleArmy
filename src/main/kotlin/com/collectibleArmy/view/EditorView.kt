@@ -1,14 +1,10 @@
 package com.collectibleArmy.view
 
 import com.collectibleArmy.GameConfig
-import com.collectibleArmy.army.Army
-import com.collectibleArmy.army.HeroHolder
-import com.collectibleArmy.army.SoldierHolder
+import com.collectibleArmy.army.*
 import com.collectibleArmy.army.templating.HeroTemplate
 import com.collectibleArmy.army.templating.SoldierTemplate
-import com.collectibleArmy.army.templating.Template
-import com.collectibleArmy.army.templating.TemplateLoading
-import com.collectibleArmy.attributes.types.BlueFaction
+import com.collectibleArmy.army.templating.UnitTemplate
 import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.events.GameLogEvent
 import com.collectibleArmy.extensions.isWithin
@@ -16,6 +12,8 @@ import com.collectibleArmy.extensions.whenTypeIs
 import com.collectibleArmy.functions.logGameEvent
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
+import com.collectibleArmy.view.fragment.editor.LoadArmyDialog
+import com.collectibleArmy.view.fragment.editor.SaveArmyDialog
 import com.collectibleArmy.view.fragment.editor.UnitsPanelFragment
 import com.collectibleArmy.view.fragment.editor.UnitsPanelTabsButtonsFragment
 import org.hexworks.cobalt.events.api.subscribe
@@ -27,6 +25,7 @@ import org.hexworks.zircon.api.component.Panel
 import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Tile
 import org.hexworks.zircon.api.extensions.handleMouseEvents
+import org.hexworks.zircon.api.extensions.onClosed
 import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.game.ProjectionMode
 import org.hexworks.zircon.api.mvc.base.BaseView
@@ -37,17 +36,15 @@ import org.hexworks.zircon.internal.Zircon
 
 class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : BaseView() {
     //TODO: Add initiative display and a way to order units
-    //TODO: Add load and save army functionality
 
     override val theme = GameConfig.THEME
 
-    private var selectedEntity: Template? = null
+    private var selectedEntity: UnitTemplate? = null
 
-    private val templateLoader = TemplateLoading()
-    private val soldiersList = templateLoader.loadSoldierTemplates()
-    private val heroesList = templateLoader.loadHeroTemplates()
+    private val soldiersList = UnitsRepository.soldiersList
+    private val heroesList = UnitsRepository.heroesList
 
-    private var displayedList = listOf<Template>()
+    private var displayedList = listOf<UnitTemplate>()
 
     private var hero: HeroHolder? = null
     private var soldiers = mutableListOf<SoldierHolder>()
@@ -64,8 +61,8 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         screen.addComponent(gameComponent)
 
         val unitsPanel = Components.panel()
-            .withSize(22, 50)
-            .withAlignmentWithin(screen, ComponentAlignment.LEFT_CENTER)
+            .withSize(22, 40)
+            .withAlignmentWithin(screen, ComponentAlignment.TOP_LEFT)
             .withDecorations(box())
             .build()
         rebuildUnitsPanel(unitsPanel)
@@ -78,6 +75,13 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             .build()
         screen.addComponent(detailsPanel)
 
+        val commandsPanel = Components.panel()
+            .withSize(22, 10)
+            .withAlignmentWithin(screen, ComponentAlignment.BOTTOM_LEFT)
+            .withDecorations(box())
+            .build()
+        screen.addComponent(commandsPanel)
+
         val logArea = Components.logArea()
             .withDecorations(org.hexworks.zircon.api.extensions.box(title = "Log"))
             .withSize(GameConfig.WINDOW_WIDTH - 22, GameConfig.LOG_AREA_HEIGHT)
@@ -87,7 +91,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
 
         val playButton = Components.button()
             .withText("Play")
-            .withAlignmentWithin(detailsPanel, ComponentAlignment.BOTTOM_RIGHT)
             .build()
         playButton.processComponentEvents(ComponentEventType.ACTIVATED) {
             if (hero != null) {
@@ -96,10 +99,50 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             } else {
                 logGameEvent("Select a hero first!")
             }
+            Processed
+        }
+
+        val saveButton = Components.button()
+            .withText("Save")
+            .build()
+        saveButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            hero?.let {hero ->
+                val modal = SaveArmyDialog(screen).apply {
+                    root.onClosed {
+                        if (it.result != "") {
+                            ArmySaver.saveArmy(Army(hero, soldiers), it.result)
+                        }
+                    }
+                }
+                screen.openModal(modal)
+            }
+            Processed
+        }
+
+        val loadButton = Components.button()
+            .withText("Load")
+            .build()
+        loadButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            val modal = LoadArmyDialog(screen,
+                ArmySaver.getArmyList(),
+                ::onLoadArmy,
+                ::onDeleteArmy
+            )
+            screen.openModal(modal)
 
             Processed
         }
-        detailsPanel.addComponent(playButton)
+
+        val buttonsHolder = Components.vbox()
+            .withSize(commandsPanel.size.width - 3, 8)
+            .withSpacing(1)
+            .build()
+
+        buttonsHolder.addComponent(saveButton)
+        buttonsHolder.addComponent(loadButton)
+        buttonsHolder.addComponent(playButton)
+
+        commandsPanel.addComponent(buttonsHolder)
 
         Zircon.eventBus.subscribe<GameLogEvent> { (text) ->
             logArea.addParagraph(
@@ -114,18 +157,22 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
 
             val clickPosition = area.screenToWorldPosition(event.position, gameComponent.position)
             if (clickPosition.isWithin(Position.create(1,1), Position.create(5,5))) {
-
-                selectedEntity?.whenTypeIs<HeroTemplate> {
-                    hero = HeroHolder(it as HeroTemplate, clickPosition, 1)
+                if (isPositionOccupied(clickPosition)) {
+                    removeSoldierAtPosition(clickPosition)
                     refreshGameComponent()
-                }
-
-                selectedEntity?.whenTypeIs<SoldierTemplate> {
-                    if (hero != null) {
-                        soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition, soldiers.size + 2))
+                } else {
+                    selectedEntity?.whenTypeIs<HeroTemplate> {
+                        hero = HeroHolder(it as HeroTemplate, clickPosition, 1)
                         refreshGameComponent()
-                    } else {
-                        logGameEvent("Select a hero first!")
+                    }
+
+                    selectedEntity?.whenTypeIs<SoldierTemplate> {
+                        if (hero != null) {
+                            soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition, soldiers.size + 2))
+                            refreshGameComponent()
+                        } else {
+                            logGameEvent("Select a hero first!")
+                        }
                     }
                 }
             }
@@ -134,13 +181,49 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         }
     }
 
+    private fun onLoadArmy(name: String) {
+        val army = ArmySaver.loadArmy(name)
+        army?.heroHolder?.let {
+            hero = it
+        }
+        army?.troopHolders?.let {
+            soldiers = it.toMutableList()
+        }
+        refreshGameComponent()
+    }
+
+    private fun onDeleteArmy(name: String) {
+        ArmySaver.deleteArmy(name)
+    }
+
     private fun refreshGameComponent() {
         hero?.let {
-            game.area.rebuildAreaWithArmy(Army(it, soldiers, BlueFaction))
+            game.area.rebuildAreaWithArmies(Army(it, soldiers), null)
         }
     }
 
-    private fun handleChangeDisplayedList(list: List<Template>, panel: Panel) {
+    private fun isPositionOccupied(position: Position) : Boolean {
+        var result = false
+        soldiers.map {
+            result = result.or(position == it.initialPosition)
+        }
+        hero?.let {
+            result = result.or(it.initialPosition == position)
+        }
+
+        return result
+    }
+
+    private fun removeSoldierAtPosition(position: Position) {
+        val occupier = soldiers.find {
+            position == it.initialPosition
+        }
+        occupier?.let {
+            soldiers.remove(it)
+        }
+    }
+
+    private fun handleChangeDisplayedList(list: List<UnitTemplate>, panel: Panel) {
         displayedList = list
         rebuildUnitsPanel(panel)
     }
@@ -149,7 +232,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         panel.detachAllComponents()
         val list = Components.vbox()
             .withSpacing(1)
-            .withSize(20, 48)
+            .withSize(20, 38)
             .build().apply {
                 addFragment(UnitsPanelTabsButtonsFragment(20).apply {
                     heroesButton.processComponentEvents(ComponentEventType.ACTIVATED) {

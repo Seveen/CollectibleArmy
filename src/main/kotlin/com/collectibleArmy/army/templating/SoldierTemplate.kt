@@ -8,5 +8,5 @@ data class SoldierTemplate(
     override var tile: TileTemplate,
     override var stats: StatsTemplate,
     override var behaviors: BehaviorsTemplate
-): Template
+): UnitTemplate
 

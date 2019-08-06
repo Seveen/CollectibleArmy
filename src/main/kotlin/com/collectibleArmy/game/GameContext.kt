@@ -1,6 +1,6 @@
 package com.collectibleArmy.game
 
-import com.collectibleArmy.command.globals.GlobalCommand
+import com.collectibleArmy.commands.globals.GlobalCommand
 import org.hexworks.amethyst.api.Context
 import org.hexworks.zircon.api.screen.Screen
 

@@ -1,4 +1,4 @@
-package com.collectibleArmy.command.globals
+package com.collectibleArmy.commands.globals
 
 import com.collectibleArmy.attributes.types.FactionType
 

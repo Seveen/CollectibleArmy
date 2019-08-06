@@ -1,7 +1,7 @@
 package com.collectibleArmy.view.fragment.editor
 
 import com.collectibleArmy.GameConfig
-import com.collectibleArmy.army.templating.Template
+import com.collectibleArmy.army.templating.UnitTemplate
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.component.VBox
@@ -9,13 +9,13 @@ import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.uievent.ComponentEventType
 import org.hexworks.zircon.api.uievent.Processed
 
-class UnitsPanelFragment(unitsList: List<Template>,
+class UnitsPanelFragment(unitsList: List<UnitTemplate>,
                          width: Int,
-                         private val onSelectUnit: (Template) -> Unit)
+                         private val onSelectUnit: (UnitTemplate) -> Unit)
     : Fragment {
 
     override val root = Components.vbox()
-        .withSize(width, 43)
+        .withSize(width, 33)
         .build().apply {
             val list = this
             addComponent(Components.hbox()
@@ -30,7 +30,7 @@ class UnitsPanelFragment(unitsList: List<Template>,
             }
         }
 
-    private fun addRow(width: Int, unit: Template, list: VBox) {
+    private fun addRow(width: Int, unit: UnitTemplate, list: VBox) {
         list.addFragment(UnitsPanelRowFragment(width, unit).apply {
             button.processComponentEvents(ComponentEventType.ACTIVATED) {
                 onSelectUnit(unit)

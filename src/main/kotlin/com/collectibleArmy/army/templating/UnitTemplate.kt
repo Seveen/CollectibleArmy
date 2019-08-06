@@ -1,6 +1,6 @@
 package com.collectibleArmy.army.templating
 
-interface Template{
+interface UnitTemplate {
     var name: String
     var tile: TileTemplate
     var stats: StatsTemplate

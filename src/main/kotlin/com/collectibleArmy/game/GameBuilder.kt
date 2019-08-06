@@ -34,11 +34,11 @@ class GameBuilder(val worldSize: Size) {
         prepareWorld()
 
         blueArmy?.let {
-            area.loadArmy(it)
+            area.loadArmy(it, BlueFaction)
         }
 
         redArmy?.let {
-            area.loadArmy(it)
+            area.loadArmy(it, RedFaction)
         }
 
         return Game.create(
@@ -121,7 +121,6 @@ class GameBuilder(val worldSize: Size) {
                 Position.create(3,4),
                 3
             )
-            .withFaction(BlueFaction)
             .build()
 
         private val defaultEnemyArmy = ArmyBuilder()
@@ -147,7 +146,6 @@ class GameBuilder(val worldSize: Size) {
                 ),
                 Position.create(8,3),
                 1)
-            .withFaction(RedFaction)
             .build()
 
         fun defaultGame() = GameBuilder(
