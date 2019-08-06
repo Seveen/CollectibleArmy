@@ -8,9 +8,9 @@ import org.hexworks.zircon.api.data.Position
 
 @Serializable
 class HeroHolder(var hero: HeroTemplate,
-                 var initialPosition: Position,
-                 var initialInitiative: Int
-) {
+                 override var initialPosition: Position,
+                 override var initialInitiative: Int
+): UnitHolder {
     @Serializer(forClass = HeroHolder::class)
     companion object : KSerializer<HeroHolder> {
         override val descriptor: SerialDescriptor = object : SerialClassDescImpl( "HeroHolder") {

@@ -7,7 +7,6 @@ import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.component.VBox
 import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.uievent.ComponentEventType
-import org.hexworks.zircon.api.uievent.Processed
 
 class UnitsPanelFragment(unitsList: List<UnitTemplate>,
                          width: Int,
@@ -34,7 +33,6 @@ class UnitsPanelFragment(unitsList: List<UnitTemplate>,
         list.addFragment(UnitsPanelRowFragment(width, unit).apply {
             button.processComponentEvents(ComponentEventType.ACTIVATED) {
                 onSelectUnit(unit)
-                Processed
             }
         })
         list.applyColorTheme(GameConfig.THEME)

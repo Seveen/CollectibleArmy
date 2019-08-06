@@ -6,20 +6,19 @@ import com.collectibleArmy.army.templating.HeroTemplate
 import com.collectibleArmy.army.templating.SoldierTemplate
 import com.collectibleArmy.army.templating.UnitTemplate
 import com.collectibleArmy.blocks.GameBlock
+import com.collectibleArmy.builders.GameTileRepository
 import com.collectibleArmy.events.GameLogEvent
 import com.collectibleArmy.extensions.isWithin
 import com.collectibleArmy.extensions.whenTypeIs
 import com.collectibleArmy.functions.logGameEvent
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
-import com.collectibleArmy.view.fragment.editor.LoadArmyDialog
-import com.collectibleArmy.view.fragment.editor.SaveArmyDialog
-import com.collectibleArmy.view.fragment.editor.UnitsPanelFragment
-import com.collectibleArmy.view.fragment.editor.UnitsPanelTabsButtonsFragment
+import com.collectibleArmy.view.fragment.editor.*
 import org.hexworks.cobalt.events.api.subscribe
 import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.GameComponents
+import org.hexworks.zircon.api.Layers
 import org.hexworks.zircon.api.component.ComponentAlignment
 import org.hexworks.zircon.api.component.Panel
 import org.hexworks.zircon.api.data.Position
@@ -49,6 +48,14 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
     private var hero: HeroHolder? = null
     private var soldiers = mutableListOf<SoldierHolder>()
 
+    private lateinit var initiativePanel: Panel
+
+    private val highlightLayer = Layers.newBuilder()
+        .withSize(game.area.actualSize().to2DSize())
+        .build().also {
+            game.area.pushOverlayAt(it, 0)
+        }
+
     override fun onDock() {
         displayedList = heroesList
 
@@ -68,12 +75,13 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         rebuildUnitsPanel(unitsPanel)
         screen.addComponent(unitsPanel)
 
-        val detailsPanel = Components.panel()
+        initiativePanel = Components.panel()
             .withSize(20, 50 - GameConfig.LOG_AREA_HEIGHT)
             .withAlignmentWithin(screen, ComponentAlignment.TOP_RIGHT)
             .withDecorations(box())
             .build()
-        screen.addComponent(detailsPanel)
+        screen.addComponent(initiativePanel)
+        rebuildInitiativePanel()
 
         val commandsPanel = Components.panel()
             .withSize(22, 10)
@@ -200,6 +208,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         hero?.let {
             game.area.rebuildAreaWithArmies(Army(it, soldiers), null)
         }
+        rebuildInitiativePanel()
     }
 
     private fun isPositionOccupied(position: Position) : Boolean {
@@ -221,6 +230,14 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         occupier?.let {
             soldiers.remove(it)
         }
+    }
+
+    private fun onHighlightUnit(position: Position) {
+        highlightLayer.setTileAt(position, GameTileRepository.UNIT_HIGHLIGHT)
+    }
+
+    private fun onStopHighlightingUnit(position: Position) {
+        highlightLayer.setTileAt(position, Tile.empty())
     }
 
     private fun handleChangeDisplayedList(list: List<UnitTemplate>, panel: Panel) {
@@ -248,5 +265,13 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             }
         panel.addComponent(list)
         panel.applyColorTheme(GameConfig.THEME)
+    }
+
+    private fun rebuildInitiativePanel() {
+        initiativePanel.detachAllComponents()
+        initiativePanel.addFragment(
+            InitiativePanelFragment(hero, soldiers, initiativePanel.size.width - 2, initiativePanel.size.height - 2,
+                ::rebuildInitiativePanel, ::onHighlightUnit, ::onStopHighlightingUnit))
+        initiativePanel.applyColorTheme(GameConfig.THEME)
     }
 }

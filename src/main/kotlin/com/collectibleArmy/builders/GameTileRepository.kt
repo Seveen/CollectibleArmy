@@ -32,6 +32,11 @@ object GameTileRepository {
         .withBackgroundColor(GameColors.BLUE_OUTSIDE_BACKGROUND)
         .buildCharacterTile()
 
+    val UNIT_HIGHLIGHT: CharacterTile = Tiles.newBuilder()
+        .withCharacter(' ')
+        .withBackgroundColor(GameColors.HIGHLIGHT_COLOR)
+        .buildCharacterTile()
+
     val HERO: CharacterTile = Tiles.newBuilder()
         .withCharacter('@')
         .withForegroundColor(GameColors.ACCENT_COLOR)
