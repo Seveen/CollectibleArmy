@@ -1,12 +1,11 @@
 package com.collectibleArmy.game
 
+import com.collectibleArmy.GameConfig.ARENA_HEIGHT
+import com.collectibleArmy.GameConfig.ARENA_WIDTH
 import com.collectibleArmy.army.Army
-import com.collectibleArmy.army.ArmyBuilder
-import com.collectibleArmy.army.templating.*
 import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.attributes.types.RedFaction
 import org.hexworks.zircon.api.Sizes
-import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Size
 
 class GameBuilder(val worldSize: Size) {
@@ -52,114 +51,20 @@ class GameBuilder(val worldSize: Size) {
 
     companion object {
 
-        private val defaultPlayerArmy = ArmyBuilder()
-            .withHero(
-                HeroTemplate(
-                    name = "Hero",
-                    tile = TileTemplate(
-                        char = '@',
-                        foregroundColor = "#440000",
-                        backgroundColor = "#000000"
-                    ),
-                    stats = StatsTemplate(
-                        attack = 2,
-                        defense = 1,
-                        hp = 10
-                    ),
-                    behaviors = BehaviorsTemplate(
-                        forward = "ForwardMover",
-                        backward = "",
-                        attack = "SimpleAttacker",
-                        defend = ""
-                    )
-                ),
-                Position.create(3,3),
-                1)
-            .withSoldier(
-                SoldierTemplate(
-                    name = "Soldier",
-                    tile = TileTemplate(
-                        char = 'S',
-                        foregroundColor = "#440000",
-                        backgroundColor = "#000000"
-                    ),
-                    stats = StatsTemplate(
-                        attack = 2,
-                        defense = 1,
-                        hp = 10
-                    ),
-                    behaviors = BehaviorsTemplate(
-                        forward = "ForwardMover",
-                        backward = "",
-                        attack = "SimpleAttacker",
-                        defend = ""
-                    )
-                ),
-                Position.create(3,2),
-                2
-            )
-            .withSoldier(
-                SoldierTemplate(
-                    name = "Soldier",
-                    tile = TileTemplate(
-                        char = 'S',
-                        foregroundColor = "#440000",
-                        backgroundColor = "#000000"
-                    ),
-                    stats = StatsTemplate(
-                        attack = 2,
-                        defense = 1,
-                        hp = 10
-                    ),
-                    behaviors = BehaviorsTemplate(
-                        forward = "ForwardMover",
-                        backward = "",
-                        attack = "SimpleAttacker",
-                        defend = ""
-                    )
-                ),
-                Position.create(3,4),
-                3
-            )
-            .build()
-
-        private val defaultEnemyArmy = ArmyBuilder()
-            .withHero(
-                HeroTemplate(
-                    name = "Villain",
-                    tile = TileTemplate(
-                        char = '@',
-                        foregroundColor = "#440033",
-                        backgroundColor = "#000000"
-                    ),
-                    stats = StatsTemplate(
-                        attack = 2,
-                        defense = 1,
-                        hp = 10
-                    ),
-                    behaviors = BehaviorsTemplate(
-                        forward = "ForwardMover",
-                        backward = "",
-                        attack = "SimpleAttacker",
-                        defend = ""
-                    )
-                ),
-                Position.create(8,3),
-                1)
-            .build()
-
         fun defaultGame() = GameBuilder(
-            worldSize = Sizes.create(12, 7))
-            .withRedArmy(defaultEnemyArmy)
-            .withBlueArmy(defaultPlayerArmy)
+            worldSize = Sizes.create(ARENA_WIDTH, ARENA_HEIGHT))
             .buildGame()
 
         fun defaultEditorGame() = GameBuilder(
-            worldSize = Sizes.create(12,7))
+            worldSize = Sizes.create(ARENA_WIDTH,ARENA_HEIGHT))
+            .buildGame()
+
+        fun defaultSelectGame() = GameBuilder(
+            worldSize = Sizes.create(ARENA_HEIGHT,ARENA_HEIGHT))
             .buildGame()
 
         fun editorGame(army: Army) = GameBuilder(
-            worldSize = Sizes.create(12,7))
+            worldSize = Sizes.create(ARENA_WIDTH,ARENA_HEIGHT))
             .withBlueArmy(army)
             .buildGame()
     }

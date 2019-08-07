@@ -2,6 +2,7 @@ package com.collectibleArmy.view.fragment.editor.armyList
 
 import com.collectibleArmy.GameConfig
 import org.hexworks.zircon.api.Components
+import org.hexworks.zircon.api.component.AlignmentStrategy
 import org.hexworks.zircon.api.component.ComponentAlignment
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.data.Size
@@ -11,16 +12,32 @@ import org.hexworks.zircon.api.graphics.Symbols
 import org.hexworks.zircon.api.uievent.ComponentEventType
 import org.hexworks.zircon.api.uievent.Processed
 
-class ArmyListScrollable(private val size: Size, initialList: List<String>, private val onLoad: (String) -> Unit, private val onDelete: (String) -> Unit): Fragment {
+class ArmyListScrollable(private val size: Size,
+                         alignmentStrategy: AlignmentStrategy,
+                         initialList: List<String>,
+                         private val onLoad: (String) -> Unit,
+                         private val onDelete: ((String) -> Unit)?): Fragment {
     private var verticalOffset = 0
 
     private val list = initialList.toMutableList()
 
-    private var scrollableBoxSize = size.minus(Size.create(4,4))
+    private var scrollableBoxSize = size.minus(Size.create(4,5))
+
+    override val root = Components.panel()
+        .withSize(size)
+        .withDecorations(box())
+        .withAlignment(alignmentStrategy)
+        .build()
 
     private val scrollableBox = Components.vbox()
         .withSize(scrollableBoxSize)
         .withSpacing(1)
+        .withAlignmentWithin(root, ComponentAlignment.CENTER)
+        .build()
+
+    private val titleLabel = Components.label()
+        .withText("Select an army")
+        .withAlignmentWithin(root, ComponentAlignment.TOP_CENTER)
         .build()
 
     private val upButton = Components.button()
@@ -47,21 +64,22 @@ class ArmyListScrollable(private val size: Size, initialList: List<String>, priv
             }
         }
 
-    override val root = Components.panel()
-        .withSize(size)
-        .withDecorations(box())
-        .build().apply {
+    init {
+        with(root) {
+            addComponent(titleLabel)
             addComponent(scrollableBox)
             addComponent(upButton)
             addComponent(downButton)
-            rebuildList()
         }
+        rebuildList()
+    }
+
 
     private fun onArmyDeleted(name: String) {
-        onDelete(name)
-        println(list)
+        onDelete?.let {
+            it(name)
+        }
         list.remove(name)
-        println(list)
         rebuildList()
     }
 
@@ -85,7 +103,7 @@ class ArmyListScrollable(private val size: Size, initialList: List<String>, priv
             val realIdx = idx + verticalOffset
             if (realIdx < list.size) {
                 scrollableBox.addFragment(
-                    ArmyListRowFragment(scrollableBoxSize.minus(Size.one()).width ,list[realIdx]).apply {
+                    ArmyListRowFragment(scrollableBoxSize.minus(Size.one()).width ,list[realIdx], onDelete != null).apply {
                         loadButton.handleComponentEvents(ComponentEventType.ACTIVATED) {
                             onLoad(list[realIdx])
                             Processed

@@ -11,6 +11,8 @@ object GameConfig {
 
     const val WINDOW_WIDTH =  80
     const val WINDOW_HEIGHT = 50
+    const val ARENA_WIDTH = 12
+    const val ARENA_HEIGHT = 7
 
     const val LOG_AREA_HEIGHT = 8
 

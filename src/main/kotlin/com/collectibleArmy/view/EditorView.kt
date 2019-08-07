@@ -197,7 +197,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             } else {
                 logGameEvent("Select a hero first!")
             }
-            Processed
         }
 
         val saveButton = Components.button()
@@ -214,7 +213,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
                 }
                 screen.openModal(modal)
             }
-            Processed
         }
 
         val loadButton = Components.button()
@@ -227,8 +225,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
                 ::onDeleteArmy
             )
             screen.openModal(modal)
-
-            Processed
         }
 
         val returnButton = Components.button()

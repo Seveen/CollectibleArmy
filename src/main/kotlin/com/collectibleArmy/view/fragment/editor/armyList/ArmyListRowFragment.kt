@@ -5,7 +5,7 @@ import org.hexworks.zircon.api.Sizes
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.graphics.Symbols
 
-class ArmyListRowFragment(width: Int, text: String): Fragment {
+class ArmyListRowFragment(width: Int, text: String, withDeleteButton: Boolean): Fragment {
 
     private val labelSize = Sizes.create(width - 6, 1)
 
@@ -16,7 +16,8 @@ class ArmyListRowFragment(width: Int, text: String): Fragment {
     override val root = Components.hbox().withSize(width, 1).build().apply {
         addComponent(label)
         addComponent(loadButton)
-        addComponent(deleteButton)
+        if (withDeleteButton) {
+            addComponent(deleteButton)
+        }
     }
-
 }

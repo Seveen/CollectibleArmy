@@ -16,7 +16,8 @@
       "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
-    }
+    },
+    "cost": 10
   },
   {
     "name": "Grunt",
@@ -35,7 +36,8 @@
       "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
-    }
+    },
+    "cost": 15
   },
   {
     "name": "Knight",
@@ -54,6 +56,7 @@
       "backward": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": ""
-    }
+    },
+    "cost": 30
   }
 ]

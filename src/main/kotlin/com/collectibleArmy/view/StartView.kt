@@ -25,7 +25,7 @@ class StartView : BaseView() {
             .build()
 
         newGameButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            replaceWith(PlayView())
+            replaceWith(SelectMissionView())
             close()
             Processed
         }
