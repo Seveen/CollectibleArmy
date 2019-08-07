@@ -4,10 +4,10 @@ import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.templating.HeroTemplate
 import com.collectibleArmy.army.templating.SoldierTemplate
 import com.collectibleArmy.army.templating.UnitTemplate
-import org.hexworks.zircon.api.ComponentDecorations
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.AlignmentStrategy
 import org.hexworks.zircon.api.component.Fragment
+import org.hexworks.zircon.api.extensions.box
 import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.uievent.ComponentEventType
 
@@ -24,7 +24,7 @@ class UnitsPanelFragment(private val width: Int,
     override val root = Components.panel()
         .withSize(width, height)
         .withAlignment(alignmentStrategy)
-        .withDecorations(ComponentDecorations.box())
+        .withDecorations(box())
         .build()
 
     val list = Components.vbox()

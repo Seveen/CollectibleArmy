@@ -1,4 +1,4 @@
-package com.collectibleArmy.view.fragment.editor
+package com.collectibleArmy.view.fragment.editor.initiativePanel
 
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.HeroHolder
@@ -11,12 +11,12 @@ import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.uievent.ComponentEventType
 
-class InitiativePanelFragment(hero: HeroHolder?, soldiers: List<SoldierHolder>,
-                              width: Int,
-                              height: Int,
-                              private val onReorderUnits: () -> Unit,
-                              private val onHighlightUnit: (Position) -> Unit,
-                              private val onStopHighlightingUnit: (Position) -> Unit)
+class InitiativePanelListFragment(hero: HeroHolder?, soldiers: List<SoldierHolder>,
+                                  width: Int,
+                                  height: Int,
+                                  private val onReorderUnits: () -> Unit,
+                                  private val onHighlightUnit: (Position) -> Unit,
+                                  private val onStopHighlightingUnit: (Position) -> Unit)
     : Fragment {
 
     private val fullList: MutableList<UnitHolder> = soldiers.toMutableList<UnitHolder>().also { list ->
@@ -37,7 +37,13 @@ class InitiativePanelFragment(hero: HeroHolder?, soldiers: List<SoldierHolder>,
         }
 
     private fun addRow(width: Int, unit: UnitHolder, list: VBox) {
-        list.addFragment(InitiativePanelRowFragment(width, unit, onHighlightUnit, onStopHighlightingUnit).apply {
+        list.addFragment(
+            InitiativePanelRowFragment(
+                width,
+                unit,
+                onHighlightUnit,
+                onStopHighlightingUnit
+            ).apply {
             upButton.processComponentEvents(ComponentEventType.ACTIVATED) {
                 if (unit.initialInitiative > 1) {
                     val targetInitiative = unit.initialInitiative - 1

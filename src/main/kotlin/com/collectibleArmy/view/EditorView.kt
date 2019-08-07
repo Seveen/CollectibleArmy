@@ -13,9 +13,9 @@ import com.collectibleArmy.extensions.whenTypeIs
 import com.collectibleArmy.functions.logGameEvent
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
-import com.collectibleArmy.view.fragment.editor.InitiativePanelFragment
 import com.collectibleArmy.view.fragment.editor.LoadArmyDialog
 import com.collectibleArmy.view.fragment.editor.SaveArmyDialog
+import com.collectibleArmy.view.fragment.editor.initiativePanel.InitiativePanelFragment
 import com.collectibleArmy.view.fragment.editor.unitsPanel.UnitsPanelFragment
 import org.hexworks.cobalt.events.api.subscribe
 import org.hexworks.zircon.api.ComponentDecorations.box
@@ -42,11 +42,10 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
     override val theme = GameConfig.THEME
 
     private var selectedEntity: UnitTemplate? = null
-
     private var hero: HeroHolder? = null
     private var soldiers = mutableListOf<SoldierHolder>()
 
-    private lateinit var initiativePanel: Panel
+    private lateinit var initiativePanel: InitiativePanelFragment
 
     private val highlightLayer = Layers.newBuilder()
         .withSize(game.area.actualSize().to2DSize())
@@ -74,19 +73,16 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         }
         screen.addFragment(unitsPanel)
 
-        initiativePanel = Components.panel()
-            .withSize(20, 50 - GameConfig.LOG_AREA_HEIGHT)
-            .withAlignmentWithin(screen, ComponentAlignment.TOP_RIGHT)
-            .withDecorations(box())
-            .build()
-        screen.addComponent(initiativePanel)
-        rebuildInitiativePanel()
+        initiativePanel = InitiativePanelFragment( 20, 50 - GameConfig.LOG_AREA_HEIGHT,
+            alignmentWithin(screen, ComponentAlignment.TOP_RIGHT),
+            ::onHighlightUnit,
+            ::onStopHighlightingUnit,
+            hero,
+            soldiers
+        )
+        screen.addFragment(initiativePanel)
 
-        val commandsPanel = Components.panel()
-            .withSize(22, 10)
-            .withAlignmentWithin(screen, ComponentAlignment.BOTTOM_LEFT)
-            .withDecorations(box())
-            .build()
+        val commandsPanel = buildCommandButtonsPanel()
         screen.addComponent(commandsPanel)
 
         val logArea = Components.logArea()
@@ -95,70 +91,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             .withAlignmentWithin(screen, ComponentAlignment.BOTTOM_RIGHT)
             .build()
         screen.addComponent(logArea)
-
-        val playButton = Components.button()
-            .withText("Test")
-            .build()
-        playButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            if (hero != null) {
-                replaceWith(PlayView(game))
-                close()
-            } else {
-                logGameEvent("Select a hero first!")
-            }
-            Processed
-        }
-
-        val saveButton = Components.button()
-            .withText("Save")
-            .build()
-        saveButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            hero?.let {hero ->
-                val modal = SaveArmyDialog(screen).apply {
-                    root.onClosed {
-                        if (it.result != "") {
-                            ArmySaver.saveArmy(Army(hero, soldiers), it.result)
-                        }
-                    }
-                }
-                screen.openModal(modal)
-            }
-            Processed
-        }
-
-        val loadButton = Components.button()
-            .withText("Load")
-            .build()
-        loadButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            val modal = LoadArmyDialog(screen,
-                ArmySaver.getArmyList(),
-                ::onLoadArmy,
-                ::onDeleteArmy
-            )
-            screen.openModal(modal)
-
-            Processed
-        }
-
-        val returnButton = Components.button()
-            .withText("Back")
-            .build()
-        returnButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            replaceWith(StartView())
-            close()
-        }
-
-        val buttonsHolder = Components.vbox()
-            .withSize(commandsPanel.size.width - 3, 8)
-            .withSpacing(1)
-            .build()
-
-        buttonsHolder.addComponent(saveButton)
-        buttonsHolder.addComponent(loadButton)
-        buttonsHolder.addComponent(playButton)
-        buttonsHolder.addComponent(returnButton)
-
-        commandsPanel.addComponent(buttonsHolder)
 
         Zircon.eventBus.subscribe<GameLogEvent> { (text) ->
             logArea.addParagraph(
@@ -216,7 +148,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         hero?.let {
             game.area.rebuildAreaWithArmies(Army(it, soldiers), null)
         }
-        rebuildInitiativePanel()
+        initiativePanel.rebuildWith(hero, soldiers)
     }
 
     private fun isPositionOccupied(position: Position) : Boolean {
@@ -248,11 +180,76 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         highlightLayer.setTileAt(position, Tile.empty())
     }
 
-    private fun rebuildInitiativePanel() {
-        initiativePanel.detachAllComponents()
-        initiativePanel.addFragment(
-            InitiativePanelFragment(hero, soldiers, initiativePanel.size.width - 2, initiativePanel.size.height - 2,
-                ::rebuildInitiativePanel, ::onHighlightUnit, ::onStopHighlightingUnit))
-        initiativePanel.applyColorTheme(GameConfig.THEME)
+    private fun buildCommandButtonsPanel(): Panel {
+        val commandsPanel = Components.panel()
+            .withSize(22, 10)
+            .withAlignmentWithin(screen, ComponentAlignment.BOTTOM_LEFT)
+            .withDecorations(box())
+            .build()
+
+        val playButton = Components.button()
+            .withText("Test")
+            .build()
+        playButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            if (hero != null) {
+                replaceWith(PlayView(game))
+                close()
+            } else {
+                logGameEvent("Select a hero first!")
+            }
+            Processed
+        }
+
+        val saveButton = Components.button()
+            .withText("Save")
+            .build()
+        saveButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            hero?.let {hero ->
+                val modal = SaveArmyDialog(screen).apply {
+                    root.onClosed {
+                        if (it.result != "") {
+                            ArmySaver.saveArmy(Army(hero, soldiers), it.result)
+                        }
+                    }
+                }
+                screen.openModal(modal)
+            }
+            Processed
+        }
+
+        val loadButton = Components.button()
+            .withText("Load")
+            .build()
+        loadButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            val modal = LoadArmyDialog(screen,
+                ArmySaver.getArmyList(),
+                ::onLoadArmy,
+                ::onDeleteArmy
+            )
+            screen.openModal(modal)
+
+            Processed
+        }
+
+        val returnButton = Components.button()
+            .withText("Back")
+            .build()
+        returnButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            replaceWith(StartView())
+            close()
+        }
+
+        val buttonsHolder = Components.vbox()
+            .withSize(commandsPanel.size.width - 3, 8)
+            .withSpacing(1)
+            .build().apply {
+                addComponent(saveButton)
+                addComponent(loadButton)
+                addComponent(playButton)
+                addComponent(returnButton)
+            }
+        commandsPanel.addComponent(buttonsHolder)
+
+        return commandsPanel
     }
 }

@@ -1,4 +1,4 @@
-package com.collectibleArmy.view.fragment.editor
+package com.collectibleArmy.view.fragment.editor.initiativePanel
 
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.HeroHolder
