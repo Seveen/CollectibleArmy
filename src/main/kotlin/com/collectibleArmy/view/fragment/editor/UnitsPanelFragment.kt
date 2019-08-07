@@ -1,40 +1,56 @@
 package com.collectibleArmy.view.fragment.editor
 
 import com.collectibleArmy.GameConfig
+import com.collectibleArmy.army.templating.HeroTemplate
+import com.collectibleArmy.army.templating.SoldierTemplate
 import com.collectibleArmy.army.templating.UnitTemplate
+import org.hexworks.zircon.api.ComponentDecorations
 import org.hexworks.zircon.api.Components
+import org.hexworks.zircon.api.component.AlignmentStrategy
 import org.hexworks.zircon.api.component.Fragment
-import org.hexworks.zircon.api.component.VBox
 import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.uievent.ComponentEventType
 
-class UnitsPanelFragment(unitsList: List<UnitTemplate>,
-                         width: Int,
-                         private val onSelectUnit: (UnitTemplate) -> Unit)
-    : Fragment {
+class UnitsPanelFragment(private val width: Int,
+                         height: Int,
+                         alignmentStrategy: AlignmentStrategy,
+                         private val soldiersList: List<SoldierTemplate>,
+                         private val heroesList: List<HeroTemplate>,
+                         private val onSelectUnit: (UnitTemplate) -> Unit
+                         ): Fragment {
 
-    override val root = Components.vbox()
-        .withSize(width, 33)
-        .build().apply {
-            val list = this
-            addComponent(Components.hbox()
-                .withSpacing(1)
-                .withSize(width, 1)
-                .build().apply {
-                    addComponent(Components.label().withText("").withSize(1,1))
-                    addComponent(Components.header().withText("Name").withSize(10, 1))
-                })
-            unitsList.forEach {unit ->
-                addRow(width, unit, list)
+    private var displayedList = listOf<UnitTemplate>()
+
+    override val root = Components.panel()
+        .withSize(width, height)
+        .withAlignment(alignmentStrategy)
+        .withDecorations(ComponentDecorations.box())
+        .build()
+
+    val list = Components.vbox()
+        .withSpacing(1)
+        .withSize(width - 2, height - 2)
+        .build()
+
+    init {
+        displayedList = heroesList
+        root.addComponent(list)
+        rebuild()
+    }
+
+    public fun rebuild() {
+        list.detachAllComponents()
+        list.addFragment(UnitsPanelTabsButtonsFragment(width - 2).apply {
+            heroesButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedList = heroesList
+                rebuild()
             }
-        }
-
-    private fun addRow(width: Int, unit: UnitTemplate, list: VBox) {
-        list.addFragment(UnitsPanelRowFragment(width, unit).apply {
-            button.processComponentEvents(ComponentEventType.ACTIVATED) {
-                onSelectUnit(unit)
+            soldiersButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedList = soldiersList
+                rebuild()
             }
         })
-        list.applyColorTheme(GameConfig.THEME)
+        list.addFragment(UnitsPanelListFragment(displayedList, width - 3, onSelectUnit = onSelectUnit))
+        root.applyColorTheme(GameConfig.THEME)
     }
 }

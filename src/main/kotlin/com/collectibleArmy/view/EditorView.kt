@@ -13,7 +13,10 @@ import com.collectibleArmy.extensions.whenTypeIs
 import com.collectibleArmy.functions.logGameEvent
 import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
-import com.collectibleArmy.view.fragment.editor.*
+import com.collectibleArmy.view.fragment.editor.InitiativePanelFragment
+import com.collectibleArmy.view.fragment.editor.LoadArmyDialog
+import com.collectibleArmy.view.fragment.editor.SaveArmyDialog
+import com.collectibleArmy.view.fragment.editor.UnitsPanelFragment
 import org.hexworks.cobalt.events.api.subscribe
 import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
@@ -23,6 +26,7 @@ import org.hexworks.zircon.api.component.ComponentAlignment
 import org.hexworks.zircon.api.component.Panel
 import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Tile
+import org.hexworks.zircon.api.extensions.alignmentWithin
 import org.hexworks.zircon.api.extensions.handleMouseEvents
 import org.hexworks.zircon.api.extensions.onClosed
 import org.hexworks.zircon.api.extensions.processComponentEvents
@@ -34,16 +38,10 @@ import org.hexworks.zircon.api.uievent.Processed
 import org.hexworks.zircon.internal.Zircon
 
 class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : BaseView() {
-    //TODO: Add initiative display and a way to order units
 
     override val theme = GameConfig.THEME
 
     private var selectedEntity: UnitTemplate? = null
-
-    private val soldiersList = UnitsRepository.soldiersList
-    private val heroesList = UnitsRepository.heroesList
-
-    private var displayedList = listOf<UnitTemplate>()
 
     private var hero: HeroHolder? = null
     private var soldiers = mutableListOf<SoldierHolder>()
@@ -57,7 +55,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         }
 
     override fun onDock() {
-        displayedList = heroesList
 
         val gameComponent = GameComponents.newGameComponentBuilder<Tile, GameBlock>()
             .withGameArea(game.area)
@@ -67,13 +64,14 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             .build()
         screen.addComponent(gameComponent)
 
-        val unitsPanel = Components.panel()
-            .withSize(22, 40)
-            .withAlignmentWithin(screen, ComponentAlignment.TOP_LEFT)
-            .withDecorations(box())
-            .build()
-        rebuildUnitsPanel(unitsPanel)
-        screen.addComponent(unitsPanel)
+        val unitsPanel = UnitsPanelFragment(22, 40,
+            alignmentWithin(screen, ComponentAlignment.TOP_LEFT),
+            UnitsRepository.soldiersList,
+            UnitsRepository.heroesList
+        ) {
+            selectedEntity = it
+        }
+        screen.addFragment(unitsPanel)
 
         initiativePanel = Components.panel()
             .withSize(20, 50 - GameConfig.LOG_AREA_HEIGHT)
@@ -98,7 +96,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         screen.addComponent(logArea)
 
         val playButton = Components.button()
-            .withText("Play")
+            .withText("Test")
             .build()
         playButton.processComponentEvents(ComponentEventType.ACTIVATED) {
             if (hero != null) {
@@ -141,6 +139,14 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             Processed
         }
 
+        val returnButton = Components.button()
+            .withText("Back")
+            .build()
+        returnButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            replaceWith(StartView())
+            close()
+        }
+
         val buttonsHolder = Components.vbox()
             .withSize(commandsPanel.size.width - 3, 8)
             .withSpacing(1)
@@ -149,6 +155,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
         buttonsHolder.addComponent(saveButton)
         buttonsHolder.addComponent(loadButton)
         buttonsHolder.addComponent(playButton)
+        buttonsHolder.addComponent(returnButton)
 
         commandsPanel.addComponent(buttonsHolder)
 
@@ -238,33 +245,6 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
 
     private fun onStopHighlightingUnit(position: Position) {
         highlightLayer.setTileAt(position, Tile.empty())
-    }
-
-    private fun handleChangeDisplayedList(list: List<UnitTemplate>, panel: Panel) {
-        displayedList = list
-        rebuildUnitsPanel(panel)
-    }
-
-    private fun rebuildUnitsPanel(panel: Panel) {
-        panel.detachAllComponents()
-        val list = Components.vbox()
-            .withSpacing(1)
-            .withSize(20, 38)
-            .build().apply {
-                addFragment(UnitsPanelTabsButtonsFragment(20).apply {
-                    heroesButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-                        handleChangeDisplayedList(heroesList, panel)
-                    }
-                    soldiersButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-                        handleChangeDisplayedList(soldiersList, panel)
-                    }
-                })
-                addFragment(UnitsPanelFragment(displayedList, 19, onSelectUnit = {
-                    selectedEntity = it
-                }))
-            }
-        panel.addComponent(list)
-        panel.applyColorTheme(GameConfig.THEME)
     }
 
     private fun rebuildInitiativePanel() {
