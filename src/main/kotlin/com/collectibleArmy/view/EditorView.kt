@@ -77,6 +77,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             alignmentWithin(screen, ComponentAlignment.TOP_RIGHT),
             ::onHighlightUnit,
             ::onStopHighlightingUnit,
+            ::refreshGameComponent,
             hero,
             soldiers
         )

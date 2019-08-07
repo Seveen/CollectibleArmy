@@ -15,6 +15,7 @@ class InitiativePanelFragment(private val width: Int,
                               alignmentStrategy: AlignmentStrategy,
                               private val onHighlightUnit: (Position) -> Unit,
                               private val onStopHighlightingUnit: (Position) -> Unit,
+                              private val onReorder: () -> Unit,
                               private var hero: HeroHolder?,
                               private var soldiers: List<SoldierHolder>): Fragment {
 
@@ -48,10 +49,15 @@ class InitiativePanelFragment(private val width: Int,
         list.addFragment(
             InitiativePanelListFragment(
                 hero, soldiers, width - 3, height - 4,
-                ::rebuild, onHighlightUnit, onStopHighlightingUnit
+                ::onReorderRebuild, onHighlightUnit, onStopHighlightingUnit
             )
         )
         list.applyColorTheme(GameConfig.THEME)
+    }
+
+    private fun onReorderRebuild() {
+        onReorder()
+        rebuild()
     }
 
     fun rebuildWith(hero: HeroHolder?, soldiers: List<SoldierHolder>) {
