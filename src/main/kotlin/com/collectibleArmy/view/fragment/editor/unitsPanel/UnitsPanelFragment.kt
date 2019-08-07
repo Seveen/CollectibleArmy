@@ -1,4 +1,4 @@
-package com.collectibleArmy.view.fragment.editor
+package com.collectibleArmy.view.fragment.editor.unitsPanel
 
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.templating.HeroTemplate
@@ -38,7 +38,7 @@ class UnitsPanelFragment(private val width: Int,
         rebuild()
     }
 
-    public fun rebuild() {
+    private fun rebuild() {
         list.detachAllComponents()
         list.addFragment(UnitsPanelTabsButtonsFragment(width - 2).apply {
             heroesButton.processComponentEvents(ComponentEventType.ACTIVATED) {
@@ -50,7 +50,13 @@ class UnitsPanelFragment(private val width: Int,
                 rebuild()
             }
         })
-        list.addFragment(UnitsPanelListFragment(displayedList, width - 3, onSelectUnit = onSelectUnit))
+        list.addFragment(
+            UnitsPanelListFragment(
+                displayedList,
+                width - 3,
+                onSelectUnit = onSelectUnit
+            )
+        )
         root.applyColorTheme(GameConfig.THEME)
     }
 }

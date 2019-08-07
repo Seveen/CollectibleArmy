@@ -1,4 +1,4 @@
-package com.collectibleArmy.view.fragment.editor
+package com.collectibleArmy.view.fragment.editor.unitsPanel
 
 import com.collectibleArmy.army.templating.UnitTemplate
 import org.hexworks.zircon.api.Components

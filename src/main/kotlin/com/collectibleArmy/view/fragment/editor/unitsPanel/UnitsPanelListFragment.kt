@@ -1,4 +1,4 @@
-package com.collectibleArmy.view.fragment.editor
+package com.collectibleArmy.view.fragment.editor.unitsPanel
 
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.templating.UnitTemplate

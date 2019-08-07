@@ -16,7 +16,7 @@ import com.collectibleArmy.game.GameBuilder
 import com.collectibleArmy.view.fragment.editor.InitiativePanelFragment
 import com.collectibleArmy.view.fragment.editor.LoadArmyDialog
 import com.collectibleArmy.view.fragment.editor.SaveArmyDialog
-import com.collectibleArmy.view.fragment.editor.UnitsPanelFragment
+import com.collectibleArmy.view.fragment.editor.unitsPanel.UnitsPanelFragment
 import org.hexworks.cobalt.events.api.subscribe
 import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
@@ -64,7 +64,8 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             .build()
         screen.addComponent(gameComponent)
 
-        val unitsPanel = UnitsPanelFragment(22, 40,
+        val unitsPanel = UnitsPanelFragment(
+            22, 40,
             alignmentWithin(screen, ComponentAlignment.TOP_LEFT),
             UnitsRepository.soldiersList,
             UnitsRepository.heroesList
