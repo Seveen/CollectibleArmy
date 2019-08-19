@@ -6,7 +6,7 @@ import com.collectibleArmy.blocks.GameBlock
 import com.collectibleArmy.builders.EntityFactory.buildHeroFromTemplate
 import com.collectibleArmy.builders.EntityFactory.buildSoldierFromTemplate
 import com.collectibleArmy.builders.GameBlockFactory
-import com.collectibleArmy.commands.globals.GlobalCommand
+import com.collectibleArmy.commands.globals.*
 import com.collectibleArmy.extensions.*
 import org.hexworks.amethyst.api.Engines
 import org.hexworks.amethyst.api.entity.Entity
@@ -39,15 +39,6 @@ class Area(val startingBlocks: Map<Position, GameBlock>,
 
     fun addEntity(entity: GameEntity<EntityType>, position: Position) {
         entity.position = position
-        engine.addEntity(entity)
-        fetchBlockAt(Position3D.from2DPosition(position,0)).map {
-            it.addEntity(entity)
-        }
-    }
-
-    fun addEntity(entity: GameEntity<EntityType>, position: Position, initiative: Int) {
-        entity.position = position
-        entity.initiative = initiative
         engine.addEntity(entity)
         fetchBlockAt(Position3D.from2DPosition(position,0)).map {
             it.addEntity(entity)
@@ -104,12 +95,19 @@ class Area(val startingBlocks: Map<Position, GameBlock>,
 
     fun loadArmy(army: Army, faction: FactionType) {
         val hero = buildHeroFromTemplate(army.heroHolder.hero, faction)
-        hero.initiative = army.heroHolder.initialInitiative
+        hero.setInitiative(GlobalAttack(BlueFaction), army.heroHolder.initialAttackInitiative)
+        hero.setInitiative(GlobalDefend(BlueFaction), army.heroHolder.initialDefendInitiative)
+        hero.setInitiative(GlobalForward(BlueFaction), army.heroHolder.initialForwardInitiative)
+        hero.setInitiative(GlobalRetreat(BlueFaction), army.heroHolder.initialRetreatInitiative)
         addEntity(hero, army.heroHolder.initialPosition)
 
         army.troopHolders.forEach { holder ->
             val soldier = buildSoldierFromTemplate(holder.soldier, faction)
-            addEntity(soldier, holder.initialPosition, holder.initialInitiative)
+            soldier.setInitiative(GlobalAttack(BlueFaction), holder.initialAttackInitiative)
+            soldier.setInitiative(GlobalDefend(BlueFaction), holder.initialDefendInitiative)
+            soldier.setInitiative(GlobalForward(BlueFaction), holder.initialForwardInitiative)
+            soldier.setInitiative(GlobalRetreat(BlueFaction), holder.initialRetreatInitiative)
+            addEntity(soldier, holder.initialPosition)
         }
     }
 

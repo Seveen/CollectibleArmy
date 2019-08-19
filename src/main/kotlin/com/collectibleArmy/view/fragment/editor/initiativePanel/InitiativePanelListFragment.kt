@@ -4,6 +4,7 @@ import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.HeroHolder
 import com.collectibleArmy.army.SoldierHolder
 import com.collectibleArmy.army.UnitHolder
+import com.collectibleArmy.commands.globals.GlobalCommand
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.component.VBox
@@ -14,6 +15,7 @@ import org.hexworks.zircon.api.uievent.ComponentEventType
 class InitiativePanelListFragment(hero: HeroHolder?, soldiers: List<SoldierHolder>,
                                   width: Int,
                                   height: Int,
+                                  private var displayedCommand: GlobalCommand,
                                   private val onReorderUnits: () -> Unit,
                                   private val onHighlightUnit: (Position) -> Unit,
                                   private val onStopHighlightingUnit: (Position) -> Unit)
@@ -24,7 +26,7 @@ class InitiativePanelListFragment(hero: HeroHolder?, soldiers: List<SoldierHolde
             list.add(it)
         }
     }.apply {
-        sortBy { it.initialInitiative }
+        sortBy { it.getInitiative(displayedCommand) }
     }
 
     override val root = Components.vbox()
@@ -41,28 +43,27 @@ class InitiativePanelListFragment(hero: HeroHolder?, soldiers: List<SoldierHolde
             InitiativePanelRowFragment(
                 width,
                 unit,
+                displayedCommand,
                 onHighlightUnit,
                 onStopHighlightingUnit
             ).apply {
             upButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-                if (unit.initialInitiative > 1) {
-                    val targetInitiative = unit.initialInitiative - 1
-                    val unitAtThatInitiative = fullList.firstOrNull { it.initialInitiative == targetInitiative }
-                    unitAtThatInitiative?.let {
-                        it.initialInitiative++
-                    }
-                    unit.initialInitiative--
+                if (unit.getInitiative(displayedCommand) > 1) {
+                    val targetInitiative = unit.getInitiative(displayedCommand) - 1
+                    val unitAtThatInitiative = fullList.firstOrNull { it.getInitiative(displayedCommand) == targetInitiative }
+                    unitAtThatInitiative?.incrementInitiative(displayedCommand)
+                    unit.decrementInitiative(displayedCommand)
                     onReorderUnits()
                 }
             }
             downButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-                if (unit.initialInitiative < fullList.size) {
-                    val targetInitiative = unit.initialInitiative + 1
-                    val unitAtThatInitiative = fullList.firstOrNull { it.initialInitiative == targetInitiative }
+                if (unit.getInitiative(displayedCommand) < fullList.size) {
+                    val targetInitiative = unit.getInitiative(displayedCommand) + 1
+                    val unitAtThatInitiative = fullList.firstOrNull { it.getInitiative(displayedCommand) == targetInitiative }
                     unitAtThatInitiative?.let {
-                        it.initialInitiative--
+                        it.decrementInitiative(displayedCommand)
                     }
-                    unit.initialInitiative++
+                    unit.incrementInitiative(displayedCommand)
                     onReorderUnits()
                 }
             }

@@ -5,6 +5,7 @@ import com.collectibleArmy.attributes.flags.BlockOccupier
 import com.collectibleArmy.attributes.types.Combatant
 import com.collectibleArmy.attributes.types.FactionType
 import com.collectibleArmy.attributes.types.combatStats
+import com.collectibleArmy.commands.globals.*
 import com.collectibleArmy.game.GameContext
 import org.hexworks.amethyst.api.Attribute
 import org.hexworks.amethyst.api.Consumed
@@ -30,13 +31,27 @@ var AnyGameEntity.position
 val AnyGameEntity.tile: Tile
     get() = this.tryToFindAttribute(EntityTile::class).tile
 
-var AnyGameEntity.initiative: Int
-    get() = this.tryToFindAttribute(Initiative::class).initiative
-    set(value) {
-        findAttribute(Initiative::class).map {
-            it.initiative = value
-        }
+fun AnyGameEntity.getInitiative(command: GlobalCommand): Int {
+    val initiative = this.tryToFindAttribute(Initiative::class)
+    return when(command::class) {
+        GlobalAttack::class -> initiative.attackInitiative
+        GlobalDefend::class -> initiative.defendInitiative
+        GlobalForward::class -> initiative.forwardInitiative
+        GlobalRetreat::class -> initiative.retreatInitiative
+        else -> 0
     }
+}
+
+fun AnyGameEntity.setInitiative(command: GlobalCommand, value: Int) {
+    val initiative = this.tryToFindAttribute(Initiative::class)
+    when(command::class) {
+        GlobalAttack::class -> initiative.attackInitiative = value
+        GlobalDefend::class -> initiative.defendInitiative = value
+        GlobalForward::class -> initiative.forwardInitiative = value
+        GlobalRetreat::class -> initiative.retreatInitiative = value
+        else -> {}
+    }
+}
 
 val AnyGameEntity.occupiesBlock: Boolean
     get() = findAttribute(BlockOccupier::class).isPresent

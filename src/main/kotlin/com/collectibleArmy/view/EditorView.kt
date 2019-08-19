@@ -37,13 +37,14 @@ import org.hexworks.zircon.api.uievent.MouseEventType
 import org.hexworks.zircon.api.uievent.Processed
 import org.hexworks.zircon.internal.Zircon
 
-class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : BaseView() {
+class EditorView(private val game: Game = GameBuilder.defaultEditorGame(),
+                 initialArmy: Army? = null) : BaseView() {
 
     override val theme = GameConfig.THEME
 
     private var selectedEntity: UnitTemplate? = null
-    private var hero: HeroHolder? = null
-    private var soldiers = mutableListOf<SoldierHolder>()
+    private var hero: HeroHolder? = initialArmy?.heroHolder
+    private var soldiers: MutableList<SoldierHolder> = (initialArmy?.troopHolders ?: mutableListOf()) as MutableList<SoldierHolder>
 
     private lateinit var initiativePanel: InitiativePanelFragment
 
@@ -111,13 +112,21 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
                     refreshGameComponent()
                 } else {
                     selectedEntity?.whenTypeIs<HeroTemplate> {
-                        hero = HeroHolder(it as HeroTemplate, clickPosition, 1)
+                        hero = HeroHolder(it as HeroTemplate, clickPosition,
+                            1,
+                            1,
+                            1,
+                            1)
                         refreshGameComponent()
                     }
 
                     selectedEntity?.whenTypeIs<SoldierTemplate> {
                         if (hero != null) {
-                            soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition, soldiers.size + 2))
+                            soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition,
+                                soldiers.size + 2,
+                                soldiers.size + 2,
+                                soldiers.size + 2,
+                                soldiers.size + 2))
                             refreshGameComponent()
                         } else {
                             logGameEvent("Select a hero first!")
@@ -128,6 +137,8 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
 
             Processed
         }
+
+        refreshGameComponent()
     }
 
     private fun onLoadArmy(name: String) {
@@ -192,11 +203,12 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame()) : Bas
             .withText("Test")
             .build()
         playButton.processComponentEvents(ComponentEventType.ACTIVATED) {
-            if (hero != null) {
-                replaceWith(PlayView(game))
-                close()
-            } else {
+            if (hero == null) {
                 logGameEvent("Select a hero first!")
+            }
+            hero?.let {
+                replaceWith(TestView(game, Army(it, soldiers)))
+                close()
             }
         }
 

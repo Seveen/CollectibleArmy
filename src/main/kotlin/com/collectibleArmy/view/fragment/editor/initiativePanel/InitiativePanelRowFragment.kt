@@ -4,6 +4,7 @@ import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.HeroHolder
 import com.collectibleArmy.army.SoldierHolder
 import com.collectibleArmy.army.UnitHolder
+import com.collectibleArmy.commands.globals.GlobalCommand
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.builder.component.ComponentStyleSetBuilder
 import org.hexworks.zircon.api.component.Fragment
@@ -13,7 +14,7 @@ import org.hexworks.zircon.api.graphics.StyleSet
 import org.hexworks.zircon.api.graphics.Symbols
 import org.hexworks.zircon.api.uievent.MouseEventType
 
-class InitiativePanelRowFragment(width: Int, unit: UnitHolder, onHighlightUnit: (Position) -> Unit, onStopHighlightingUnit: (Position) -> Unit): Fragment {
+class InitiativePanelRowFragment(width: Int, unit: UnitHolder, command: GlobalCommand, onHighlightUnit: (Position) -> Unit, onStopHighlightingUnit: (Position) -> Unit): Fragment {
     private val initiativeLabelWidth = 3
     private val arrowsWidth = 2
     private val totalHeight = 1
@@ -46,7 +47,7 @@ class InitiativePanelRowFragment(width: Int, unit: UnitHolder, onHighlightUnit: 
         .build().apply {
             addComponent(
                 Components.label()
-                    .withText("${unit.initialInitiative}")
+                    .withText("${unit.getInitiative(command)}")
                     .withSize(initiativeLabelWidth, totalHeight)
                     .withDecorations()
                     .build()

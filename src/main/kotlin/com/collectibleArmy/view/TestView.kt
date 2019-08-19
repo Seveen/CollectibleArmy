@@ -5,6 +5,7 @@ import com.collectibleArmy.KeyboardMapping.AttackKey
 import com.collectibleArmy.KeyboardMapping.DefendKey
 import com.collectibleArmy.KeyboardMapping.ForwardKey
 import com.collectibleArmy.KeyboardMapping.RetreatKey
+import com.collectibleArmy.army.Army
 import com.collectibleArmy.attributes.types.BlueFaction
 import com.collectibleArmy.attributes.types.RedFaction
 import com.collectibleArmy.blocks.GameBlock
@@ -14,20 +15,24 @@ import com.collectibleArmy.game.Game
 import com.collectibleArmy.game.GameBuilder
 import com.collectibleArmy.view.fragment.play.CommandButtonsFragment
 import org.hexworks.cobalt.events.api.subscribe
+import org.hexworks.zircon.api.ComponentDecorations
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.GameComponents
 import org.hexworks.zircon.api.component.ComponentAlignment
+import org.hexworks.zircon.api.component.Panel
 import org.hexworks.zircon.api.data.Tile
 import org.hexworks.zircon.api.extensions.box
 import org.hexworks.zircon.api.extensions.handleKeyboardEvents
+import org.hexworks.zircon.api.extensions.processComponentEvents
 import org.hexworks.zircon.api.game.ProjectionMode
 import org.hexworks.zircon.api.mvc.base.BaseView
+import org.hexworks.zircon.api.uievent.ComponentEventType
 import org.hexworks.zircon.api.uievent.KeyCode
 import org.hexworks.zircon.api.uievent.KeyboardEventType
 import org.hexworks.zircon.api.uievent.Processed
 import org.hexworks.zircon.internal.Zircon
 
-class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
+class TestView(val game: Game = GameBuilder.defaultGame(), val savedArmy: Army) : BaseView() {
 
     override val theme = GameConfig.THEME
 
@@ -56,6 +61,9 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
             }
         screen.addComponent(actionsPanel)
 
+        val commandsPanel = buildCommandButtonsPanel()
+        screen.addComponent(commandsPanel)
+
         Zircon.eventBus.subscribe<GameLogEvent> { (text) ->
             logArea.addParagraph(
                 paragraph = text,
@@ -69,7 +77,7 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
 
             //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
 
-             command = when (event.code) {
+            command = when (event.code) {
                 ForwardKey -> GlobalForward(BlueFaction)
                 RetreatKey -> GlobalRetreat(BlueFaction)
                 AttackKey -> GlobalAttack(BlueFaction)
@@ -111,5 +119,31 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
                 GlobalRetreat(BlueFaction),
                 game)
         }
+    }
+
+    private fun buildCommandButtonsPanel(): Panel {
+        val commandsPanel = Components.panel()
+            .withSize(22, 10)
+            .withAlignmentWithin(screen, ComponentAlignment.TOP_LEFT)
+            .withDecorations(ComponentDecorations.box())
+            .build()
+
+        val returnButton = Components.button()
+            .withText("Back")
+            .build()
+        returnButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+            replaceWith(EditorView(initialArmy = savedArmy))
+            close()
+        }
+
+        val buttonsHolder = Components.vbox()
+            .withSize(commandsPanel.size.width - 3, 8)
+            .withSpacing(1)
+            .build().apply {
+                addComponent(returnButton)
+            }
+        commandsPanel.addComponent(buttonsHolder)
+
+        return commandsPanel
     }
 }

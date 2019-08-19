@@ -3,12 +3,16 @@ package com.collectibleArmy.view.fragment.editor.initiativePanel
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.army.HeroHolder
 import com.collectibleArmy.army.SoldierHolder
+import com.collectibleArmy.attributes.types.BlueFaction
+import com.collectibleArmy.commands.globals.*
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.AlignmentStrategy
 import org.hexworks.zircon.api.component.ComponentAlignment
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.extensions.box
+import org.hexworks.zircon.api.extensions.processComponentEvents
+import org.hexworks.zircon.api.uievent.ComponentEventType
 
 class InitiativePanelFragment(private val width: Int,
                               private val height: Int,
@@ -24,6 +28,8 @@ class InitiativePanelFragment(private val width: Int,
         .withAlignment(alignmentStrategy)
         .withDecorations(box())
         .build()
+
+    private var displayedCommand: GlobalCommand = GlobalAttack(BlueFaction)
 
     private val label = Components.label()
         .withText("Initiative")
@@ -45,13 +51,39 @@ class InitiativePanelFragment(private val width: Int,
 
     private fun rebuild() {
         list.detachAllComponents()
+        label.text = when (displayedCommand::class) {
+            GlobalAttack::class -> "Attack Initiative"
+            GlobalDefend::class -> "Defend Initiative"
+            GlobalForward::class -> "Forward Initiative"
+            GlobalRetreat::class -> "Retreat Initiative"
+            else -> "Initiative"
+        }
         list.addComponent(label)
         list.addFragment(
             InitiativePanelListFragment(
-                hero, soldiers, width - 3, height - 4,
+                hero, soldiers, width - 3, height - 11,
+                displayedCommand,
                 ::onReorderRebuild, onHighlightUnit, onStopHighlightingUnit
             )
         )
+        list.addFragment(InitiativePanelTabsButtonsFragment(width - 2).apply {
+            attackButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedCommand = GlobalAttack(BlueFaction)
+                rebuild()
+            }
+            defendButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedCommand = GlobalDefend(BlueFaction)
+                rebuild()
+            }
+            forwardButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedCommand = GlobalForward(BlueFaction)
+                rebuild()
+            }
+            retreatButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedCommand = GlobalRetreat(BlueFaction)
+                rebuild()
+            }
+        })
         list.applyColorTheme(GameConfig.THEME)
     }
 
