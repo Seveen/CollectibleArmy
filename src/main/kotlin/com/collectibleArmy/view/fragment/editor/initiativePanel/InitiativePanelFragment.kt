@@ -52,16 +52,17 @@ class InitiativePanelFragment(private val width: Int,
     private fun rebuild() {
         list.detachAllComponents()
         label.text = when (displayedCommand::class) {
-            GlobalAttack::class -> "Attack Initiative"
-            GlobalDefend::class -> "Defend Initiative"
-            GlobalForward::class -> "Forward Initiative"
-            GlobalRetreat::class -> "Retreat Initiative"
+            GlobalAttack::class -> "Attack order"
+            GlobalDefend::class -> "Defend order"
+            GlobalForward::class -> "Forward order"
+            GlobalRetreat::class -> "Retreat order"
+            GlobalCast::class -> "Cast order"
             else -> "Initiative"
         }
         list.addComponent(label)
         list.addFragment(
             InitiativePanelListFragment(
-                hero, soldiers, width - 3, height - 11,
+                hero, soldiers, width - 3, height - 12,
                 displayedCommand,
                 ::onReorderRebuild, onHighlightUnit, onStopHighlightingUnit
             )
@@ -81,6 +82,10 @@ class InitiativePanelFragment(private val width: Int,
             }
             retreatButton.processComponentEvents(ComponentEventType.ACTIVATED) {
                 displayedCommand = GlobalRetreat(BlueFaction)
+                rebuild()
+            }
+            castButton.processComponentEvents(ComponentEventType.ACTIVATED) {
+                displayedCommand = GlobalCast(BlueFaction)
                 rebuild()
             }
         })

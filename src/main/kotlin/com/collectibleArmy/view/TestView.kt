@@ -53,7 +53,7 @@ class TestView(val game: Game = GameBuilder.defaultGame(), val savedArmy: Army) 
         screen.addComponent(gameComponent)
 
         val actionsPanel = Components.panel()
-            .withSize(17, 3)
+            .withSize(22, 3)
             .withAlignmentAround(gameComponent, ComponentAlignment.BOTTOM_CENTER)
             .withDecorations(box())
             .build().apply {

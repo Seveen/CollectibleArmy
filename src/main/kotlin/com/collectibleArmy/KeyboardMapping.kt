@@ -7,4 +7,5 @@ object KeyboardMapping {
     val ForwardKey = KeyCode.KEY_W
     val AttackKey = KeyCode.KEY_E
     val DefendKey = KeyCode.KEY_R
+    val CastKey = KeyCode.KEY_T
 }

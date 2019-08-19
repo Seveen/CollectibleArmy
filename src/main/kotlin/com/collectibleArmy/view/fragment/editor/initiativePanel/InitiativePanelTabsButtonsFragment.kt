@@ -25,14 +25,20 @@ class InitiativePanelTabsButtonsFragment(width: Int) : Fragment {
         .withDecorations()
         .build()
 
+    val castButton = Components.button()
+        .withText("Cast")
+        .withDecorations()
+        .build()
+
     override val root = Components.vbox()
         .withSpacing(0)
-        .withSize(width - 1, 6)
+        .withSize(width - 1, 7)
         .withDecorations(box())
         .build().apply {
             addComponent(attackButton)
             addComponent(defendButton)
             addComponent(forwardButton)
             addComponent(retreatButton)
+            addComponent(castButton)
         }
 }

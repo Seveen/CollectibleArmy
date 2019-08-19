@@ -116,6 +116,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame(),
                             1,
                             1,
                             1,
+                            1,
                             1)
                         refreshGameComponent()
                     }
@@ -123,6 +124,7 @@ class EditorView(private val game: Game = GameBuilder.defaultEditorGame(),
                     selectedEntity?.whenTypeIs<SoldierTemplate> {
                         if (hero != null) {
                             soldiers.add(SoldierHolder(it as SoldierTemplate, clickPosition,
+                                soldiers.size + 2,
                                 soldiers.size + 2,
                                 soldiers.size + 2,
                                 soldiers.size + 2,

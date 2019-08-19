@@ -12,12 +12,14 @@ class SoldierHolder(var soldier: SoldierTemplate,
                     initialAttackInitiative: Int,
                     initialDefendInitiative: Int,
                     initialForwardInitiative: Int,
-                    initialRetreatInitiative: Int
+                    initialRetreatInitiative: Int,
+                    initialCastInitiative: Int
 ): BaseUnitHolder(initialPosition,
-                initialAttackInitiative,
-                initialDefendInitiative,
-                initialForwardInitiative,
-                initialRetreatInitiative) {
+    initialAttackInitiative,
+    initialDefendInitiative,
+    initialForwardInitiative,
+    initialRetreatInitiative,
+    initialCastInitiative) {
 
     @Serializer(forClass = SoldierHolder::class)
     companion object : KSerializer<SoldierHolder> {
@@ -29,6 +31,7 @@ class SoldierHolder(var soldier: SoldierTemplate,
                 addElement("defendInitiative")
                 addElement("forwardInitiative")
                 addElement("retreatInitiative")
+                addElement("castInitiative")
             }
         }
 
@@ -40,6 +43,7 @@ class SoldierHolder(var soldier: SoldierTemplate,
             compositeOutput.encodeIntElement(descriptor, 3, obj.initialDefendInitiative)
             compositeOutput.encodeIntElement(descriptor, 4, obj.initialForwardInitiative)
             compositeOutput.encodeIntElement(descriptor, 5, obj.initialRetreatInitiative)
+            compositeOutput.encodeIntElement(descriptor, 5, obj.initialCastInitiative)
             compositeOutput.endStructure(descriptor)
         }
 
@@ -52,6 +56,7 @@ class SoldierHolder(var soldier: SoldierTemplate,
             var defendInitiative: Int? = null
             var forwardInitiative: Int? = null
             var retreatInitiative: Int? = null
+            var castInitiative: Int? = null
 
             loop@ while (true) {
                 when (val i = dec.decodeElementIndex(descriptor)) {
@@ -62,6 +67,7 @@ class SoldierHolder(var soldier: SoldierTemplate,
                     3 -> defendInitiative = dec.decodeIntElement(descriptor, i)
                     4 -> forwardInitiative = dec.decodeIntElement(descriptor, i)
                     5 -> retreatInitiative = dec.decodeIntElement(descriptor, i)
+                    6 -> castInitiative = dec.decodeIntElement(descriptor, i)
                     else -> throw SerializationException("Unknown index $i")
                 }
             }
@@ -76,7 +82,8 @@ class SoldierHolder(var soldier: SoldierTemplate,
                 attackInitiative ?: throw MissingFieldException("attackInitiative"),
                 defendInitiative ?: throw MissingFieldException("defendInitiative"),
                 forwardInitiative ?: throw MissingFieldException("forwardInitiative"),
-                retreatInitiative ?: throw MissingFieldException("retreatInitiative")
+                retreatInitiative ?: throw MissingFieldException("retreatInitiative"),
+                castInitiative ?: throw MissingFieldException("castInitiative")
             )
         }
     }

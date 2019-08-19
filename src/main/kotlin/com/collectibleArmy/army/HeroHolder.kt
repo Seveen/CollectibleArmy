@@ -1,7 +1,6 @@
 package com.collectibleArmy.army
 
 import com.collectibleArmy.army.templating.HeroTemplate
-import com.collectibleArmy.commands.globals.*
 import com.collectibleArmy.extensions.PositionSerializer
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
@@ -13,12 +12,14 @@ class HeroHolder(var hero: HeroTemplate,
                 initialAttackInitiative: Int,
                 initialDefendInitiative: Int,
                 initialForwardInitiative: Int,
-                initialRetreatInitiative: Int
+                initialRetreatInitiative: Int,
+                initialCastInitiative: Int
 ): BaseUnitHolder(initialPosition,
                 initialAttackInitiative,
                 initialDefendInitiative,
                 initialForwardInitiative,
-                initialRetreatInitiative) {
+                initialRetreatInitiative,
+                initialCastInitiative) {
 
     @Serializer(forClass = HeroHolder::class)
     companion object : KSerializer<HeroHolder> {
@@ -30,6 +31,7 @@ class HeroHolder(var hero: HeroTemplate,
                 addElement("defendInitiative")
                 addElement("forwardInitiative")
                 addElement("retreatInitiative")
+                addElement("castInitiative")
             }
         }
 
@@ -41,6 +43,7 @@ class HeroHolder(var hero: HeroTemplate,
             compositeOutput.encodeIntElement(descriptor, 3, obj.initialDefendInitiative)
             compositeOutput.encodeIntElement(descriptor, 4, obj.initialForwardInitiative)
             compositeOutput.encodeIntElement(descriptor, 5, obj.initialRetreatInitiative)
+            compositeOutput.encodeIntElement(descriptor, 6, obj.initialCastInitiative)
             compositeOutput.endStructure(descriptor)
         }
 
@@ -53,6 +56,7 @@ class HeroHolder(var hero: HeroTemplate,
             var defendInitiative: Int? = null
             var forwardInitiative: Int? = null
             var retreatInitiative: Int? = null
+            var castInitiative: Int? = null
 
             loop@ while (true) {
                 when (val i = dec.decodeElementIndex(descriptor)) {
@@ -63,6 +67,7 @@ class HeroHolder(var hero: HeroTemplate,
                     3 -> defendInitiative = dec.decodeIntElement(descriptor, i)
                     4 -> forwardInitiative = dec.decodeIntElement(descriptor, i)
                     5 -> retreatInitiative = dec.decodeIntElement(descriptor, i)
+                    6 -> castInitiative = dec.decodeIntElement(descriptor, i)
                     else -> throw SerializationException("Unknown index $i")
                 }
             }
@@ -77,7 +82,8 @@ class HeroHolder(var hero: HeroTemplate,
                 attackInitiative ?: throw MissingFieldException("attackInitiative"),
                 defendInitiative ?: throw MissingFieldException("defendInitiative"),
                 forwardInitiative ?: throw MissingFieldException("forwardInitiative"),
-                retreatInitiative ?: throw MissingFieldException("retreatInitiative")
+                retreatInitiative ?: throw MissingFieldException("retreatInitiative"),
+                castInitiative ?: throw MissingFieldException("castInitiative")
             )
         }
     }

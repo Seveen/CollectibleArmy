@@ -1,9 +1,6 @@
 package com.collectibleArmy.view.fragment.play
 
-import com.collectibleArmy.events.AttackActionEvent
-import com.collectibleArmy.events.DefendActionEvent
-import com.collectibleArmy.events.ForwardActionEvent
-import com.collectibleArmy.events.RetreatActionEvent
+import com.collectibleArmy.events.*
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.component.Fragment
 import org.hexworks.zircon.api.extensions.processComponentEvents
@@ -45,13 +42,22 @@ class CommandButtonsFragment : Fragment {
             }
         }
 
+    private val castButton = Components.button()
+        .withText("${Symbols.ALPHA}")
+        .build().apply {
+            processComponentEvents(ComponentEventType.ACTIVATED) {
+                Zircon.eventBus.publish(CastActionEvent())
+            }
+        }
+
     override val root = Components.hbox()
         .withSpacing(1)
-        .withSize(15,1)
+        .withSize(20,1)
         .build().apply {
             addComponent(retreatButton)
             addComponent(forwardButton)
             addComponent(attackButton)
             addComponent(defenseButton)
+            addComponent(castButton)
         }
 }

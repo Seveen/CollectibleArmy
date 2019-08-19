@@ -38,6 +38,7 @@ fun AnyGameEntity.getInitiative(command: GlobalCommand): Int {
         GlobalDefend::class -> initiative.defendInitiative
         GlobalForward::class -> initiative.forwardInitiative
         GlobalRetreat::class -> initiative.retreatInitiative
+        GlobalCast::class -> initiative.castInitiative
         else -> 0
     }
 }
@@ -49,6 +50,7 @@ fun AnyGameEntity.setInitiative(command: GlobalCommand, value: Int) {
         GlobalDefend::class -> initiative.defendInitiative = value
         GlobalForward::class -> initiative.forwardInitiative = value
         GlobalRetreat::class -> initiative.retreatInitiative = value
+        GlobalCast::class -> initiative.castInitiative = value
         else -> {}
     }
 }

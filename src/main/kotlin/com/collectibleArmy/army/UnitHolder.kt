@@ -9,6 +9,7 @@ interface UnitHolder {
     var initialDefendInitiative: Int
     var initialForwardInitiative: Int
     var initialRetreatInitiative: Int
+    var initialCastInitiative: Int
 
     fun getInitiative(command: GlobalCommand) : Int
     fun setInitiative(command: GlobalCommand, value: Int)

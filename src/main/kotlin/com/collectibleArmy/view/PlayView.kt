@@ -2,6 +2,7 @@ package com.collectibleArmy.view
 
 import com.collectibleArmy.GameConfig
 import com.collectibleArmy.KeyboardMapping.AttackKey
+import com.collectibleArmy.KeyboardMapping.CastKey
 import com.collectibleArmy.KeyboardMapping.DefendKey
 import com.collectibleArmy.KeyboardMapping.ForwardKey
 import com.collectibleArmy.KeyboardMapping.RetreatKey
@@ -65,24 +66,24 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
         }
 
         screen.handleKeyboardEvents(KeyboardEventType.KEY_PRESSED) { event, _ ->
-            var command: GlobalCommand? = null
-
-            //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
-
-             command = when (event.code) {
-                ForwardKey -> GlobalForward(BlueFaction)
+            var command: GlobalCommand? = when (event.code) {
                 RetreatKey -> GlobalRetreat(BlueFaction)
+                ForwardKey -> GlobalForward(BlueFaction)
                 AttackKey -> GlobalAttack(BlueFaction)
                 DefendKey -> GlobalDefend(BlueFaction)
+                CastKey -> GlobalCast(BlueFaction)
                 KeyCode.KEY_A -> GlobalForward(RedFaction)
                 KeyCode.KEY_S -> GlobalRetreat(RedFaction)
                 KeyCode.KEY_D -> GlobalAttack(RedFaction)
                 KeyCode.KEY_F -> GlobalDefend(RedFaction)
+                KeyCode.KEY_G -> GlobalCast(RedFaction)
                 else -> null
-            }
+           }
 
-            if (command != null) {
-                game.area.update(screen, command, game)
+            //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
+
+            command?.let {
+                game.area.update(screen, it, game)
             }
 
             Processed
@@ -109,6 +110,12 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
         Zircon.eventBus.subscribe<RetreatActionEvent> {
             game.area.update(screen,
                 GlobalRetreat(BlueFaction),
+                game)
+        }
+
+        Zircon.eventBus.subscribe<CastActionEvent> {
+            game.area.update(screen,
+                GlobalCast(BlueFaction),
                 game)
         }
     }
