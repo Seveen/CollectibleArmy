@@ -119,6 +119,10 @@ class Area(val startingBlocks: Map<Position, GameBlock>,
         ))
     }
 
+    fun isPositionEmpty(position: Position) : Boolean {
+        return fetchBlockAt(Position3D.from2DPosition(position, 0)).get().isOccupied
+    }
+
     fun moveEntity(entity: GameEntity<EntityType>, position: Position): Boolean {
         var success = false
         val oldBlock = fetchBlockAt(Position3D.from2DPosition(entity.position,0))

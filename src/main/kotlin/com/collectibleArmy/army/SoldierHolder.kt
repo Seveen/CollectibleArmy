@@ -43,7 +43,7 @@ class SoldierHolder(var soldier: SoldierTemplate,
             compositeOutput.encodeIntElement(descriptor, 3, obj.initialDefendInitiative)
             compositeOutput.encodeIntElement(descriptor, 4, obj.initialForwardInitiative)
             compositeOutput.encodeIntElement(descriptor, 5, obj.initialRetreatInitiative)
-            compositeOutput.encodeIntElement(descriptor, 5, obj.initialCastInitiative)
+            compositeOutput.encodeIntElement(descriptor, 6, obj.initialCastInitiative)
             compositeOutput.endStructure(descriptor)
         }
 

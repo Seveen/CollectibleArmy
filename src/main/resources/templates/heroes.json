@@ -13,7 +13,7 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "BackwardMover",
+      "retreat": "BackwardMover",
       "attack": "SimpleAttacker",
       "defend": "SimpleDefender"
     }

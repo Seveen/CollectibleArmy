@@ -5,6 +5,8 @@ import com.collectibleArmy.attributes.flags.BlockOccupier
 import com.collectibleArmy.attributes.types.Combatant
 import com.collectibleArmy.attributes.types.FactionType
 import com.collectibleArmy.attributes.types.combatStats
+import com.collectibleArmy.commands.Attack
+import com.collectibleArmy.commands.MoveTo
 import com.collectibleArmy.commands.globals.*
 import com.collectibleArmy.game.GameContext
 import org.hexworks.amethyst.api.Attribute
@@ -15,6 +17,7 @@ import org.hexworks.amethyst.api.entity.Entity
 import org.hexworks.amethyst.api.entity.EntityType
 import org.hexworks.cobalt.datatypes.extensions.map
 import org.hexworks.cobalt.datatypes.extensions.orElseThrow
+import org.hexworks.zircon.api.data.Position
 import org.hexworks.zircon.api.data.Tile
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -86,6 +89,22 @@ val AnyGameEntity.defenseValue: Int
 
         return combat
     }
+
+fun GameEntity<EntityType>.moveTo(position: Position, context: GameContext) {
+    executeCommand(MoveTo(context, this, position))
+}
+
+fun GameEntity<Combatant>.tryToAttack(position: Position, context: GameContext) {
+    val area = context.area
+    area.fetchBlockAt(position.toPosition3D(0)).map { block ->
+        if (block.isOccupied) {
+            val occupier = block.occupier.get()
+            occupier.whenTypeIs<Combatant> {
+                executeCommand(Attack(context, this, it))
+            }
+        }
+    }
+}
 
 fun AnyGameEntity.tryActionsOn(context: GameContext, target: AnyGameEntity): Response {
     var result: Response = Pass

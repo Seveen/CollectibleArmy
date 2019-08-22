@@ -31,6 +31,7 @@ import org.hexworks.zircon.internal.Zircon
 class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
 
     override val theme = GameConfig.THEME
+    var debugMode = false
 
     override fun onDock() {
         val logArea = Components.logArea()
@@ -49,7 +50,7 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
         screen.addComponent(gameComponent)
 
         val actionsPanel = Components.panel()
-            .withSize(17, 3)
+            .withSize(22, 3)
             .withAlignmentAround(gameComponent, ComponentAlignment.BOTTOM_CENTER)
             .withDecorations(box())
             .build().apply {
@@ -79,6 +80,10 @@ class PlayView(val game: Game = GameBuilder.defaultGame()) : BaseView() {
                 KeyCode.KEY_G -> GlobalCast(RedFaction)
                 else -> null
            }
+
+            if (event.code == KeyCode.KEY_J) {
+                debugMode = !debugMode
+            }
 
             //TODO: Add a "re formation" that tries to replace each pawn at its starting place ???
 

@@ -6,8 +6,13 @@ import com.collectibleArmy.attributes.*
 import com.collectibleArmy.attributes.flags.BlockOccupier
 import com.collectibleArmy.attributes.types.*
 import com.collectibleArmy.commands.Attack
+import com.collectibleArmy.commands.globals.GlobalAttack
+import com.collectibleArmy.commands.globals.GlobalDefend
+import com.collectibleArmy.commands.globals.GlobalForward
+import com.collectibleArmy.commands.globals.GlobalRetreat
 import com.collectibleArmy.extensions.GameEntity
 import com.collectibleArmy.game.GameContext
+import com.collectibleArmy.systems.behaviors.GlobalBehavior
 import com.collectibleArmy.systems.facets.Attackable
 import com.collectibleArmy.systems.facets.Destructible
 import com.collectibleArmy.systems.facets.Fleeable
@@ -15,7 +20,6 @@ import com.collectibleArmy.systems.facets.Movable
 import org.hexworks.amethyst.api.Entities
 import org.hexworks.amethyst.api.builder.EntityBuilder
 import org.hexworks.amethyst.api.entity.EntityType
-import org.hexworks.amethyst.api.system.Behavior
 import org.hexworks.zircon.api.TileColors
 import org.hexworks.zircon.api.Tiles
 
@@ -61,13 +65,20 @@ object EntityFactory {
             .buildCharacterTile()
 
         val forwardBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.forward).kotlin
+            completeBehaviorPath + template.behaviors.forward).kotlin.objectInstance as GlobalBehavior
+        forwardBehavior.setResponseCommand(GlobalForward(faction))
 
-        val backwardBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.backward).kotlin
+        val retreatBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.retreat).kotlin.objectInstance as GlobalBehavior
+        retreatBehavior.setResponseCommand(GlobalRetreat(faction))
 
         val attackBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.attack).kotlin
+            completeBehaviorPath + template.behaviors.attack).kotlin.objectInstance as GlobalBehavior
+        attackBehavior.setResponseCommand(GlobalAttack(faction))
+
+        val defenseBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.defend).kotlin.objectInstance as GlobalBehavior
+        defenseBehavior.setResponseCommand(GlobalDefend(faction))
 
         return newGameEntityOfType(Soldier(template.name)) {
             attributes(
@@ -84,9 +95,10 @@ object EntityFactory {
                 Initiative()
             )
             behaviors(
-                forwardBehavior.objectInstance as Behavior<GameContext>,
-                backwardBehavior.objectInstance as Behavior<GameContext>,
-                attackBehavior.objectInstance as Behavior<GameContext>
+                forwardBehavior,
+                retreatBehavior,
+                attackBehavior,
+                defenseBehavior
             )
             facets(
                 Movable,
@@ -107,15 +119,20 @@ object EntityFactory {
             .buildCharacterTile()
 
         val forwardBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.forward).kotlin
+            completeBehaviorPath + template.behaviors.forward).kotlin.objectInstance as GlobalBehavior
+        forwardBehavior.setResponseCommand(GlobalForward(faction))
 
-        val backwardBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.backward).kotlin
+        val retreatBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.retreat).kotlin.objectInstance as GlobalBehavior
+        retreatBehavior.setResponseCommand(GlobalRetreat(faction))
 
         val attackBehavior = Class.forName(
-            completeBehaviorPath + template.behaviors.attack).kotlin
+            completeBehaviorPath + template.behaviors.attack).kotlin.objectInstance as GlobalBehavior
+        attackBehavior.setResponseCommand(GlobalAttack(faction))
 
-        println(forwardBehavior)
+        val defenseBehavior = Class.forName(
+            completeBehaviorPath + template.behaviors.defend).kotlin.objectInstance as GlobalBehavior
+        defenseBehavior.setResponseCommand(GlobalDefend(faction))
 
         return newGameEntityOfType(Hero(template.name)) {
             attributes(
@@ -132,9 +149,10 @@ object EntityFactory {
                 Initiative()
             )
             behaviors(
-                forwardBehavior.objectInstance as Behavior<GameContext>,
-                backwardBehavior.objectInstance as Behavior<GameContext>,
-                attackBehavior.objectInstance as Behavior<GameContext>
+                forwardBehavior,
+                retreatBehavior,
+                attackBehavior,
+                defenseBehavior
             )
             facets(
                 Movable,

@@ -13,9 +13,9 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "BackwardMover",
+      "retreat": "BackwardMover",
       "attack": "SimpleAttacker",
-      "defend": ""
+      "defend": "None"
     },
     "cost": 10
   },
@@ -33,9 +33,9 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "BackwardMover",
+      "retreat": "BackwardMover",
       "attack": "SimpleAttacker",
-      "defend": ""
+      "defend": "None"
     },
     "cost": 15
   },
@@ -53,10 +53,50 @@
     },
     "behaviors": {
       "forward": "ForwardMover",
-      "backward": "BackwardMover",
+      "retreat": "BackwardMover",
       "attack": "SimpleAttacker",
-      "defend": ""
+      "defend": "None"
     },
     "cost": 30
+  },
+  {
+    "name": "Zombie",
+    "tile": {
+      "char": "Z",
+      "backgroundColor": "#1e2320",
+      "foregroundColor": "#78C165"
+    },
+    "stats": {
+      "attack": 1,
+      "defense": 1,
+      "hp": 10
+    },
+    "behaviors": {
+      "forward": "ForwardMover",
+      "retreat": "ForwardMover",
+      "attack": "ForwardMover",
+      "defend": "ForwardMover"
+    },
+    "cost": 5
+  },
+  {
+    "name": "Necromancer",
+    "tile": {
+      "char": "N",
+      "backgroundColor": "#1e2320",
+      "foregroundColor": "#000000"
+    },
+    "stats": {
+      "attack": 1,
+      "defense": 1,
+      "hp": 5
+    },
+    "behaviors": {
+      "forward": "ZombieSummoner",
+      "retreat": "ZombieSummoner",
+      "attack": "ZombieSummoner",
+      "defend": "ZombieSummoner"
+    },
+    "cost": 5
   }
 ]
